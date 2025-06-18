@@ -4,7 +4,6 @@ import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
-import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;

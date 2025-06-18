@@ -30,4 +30,6 @@ public class OhMyMeteors implements ModInitializer {
 		OMMEntities.registerEntities();
 	}
 
+	public static final boolean debugSpawningOff = false;
+
 }

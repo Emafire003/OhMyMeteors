@@ -3,7 +3,7 @@
 	"package": "me.emafire003.dev.ohmymeteors.mixin",
 	"compatibilityLevel": "JAVA_16",
 	"mixins": [
-
+		"WorldSpawnMeteorMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
