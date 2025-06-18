@@ -1,12 +1,18 @@
 package me.emafire003.dev.ohmymeteors.entities;
 
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
+import me.emafire003.dev.structureplacerapi.StructurePlacerAPI;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 
 public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
@@ -44,10 +50,16 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
 
-        OhMyMeteors.LOGGER.warn("Ehy i've hit a block! Type:" + blockHitResult.getType());
         if(!this.getWorld().getBlockState(blockHitResult.getBlockPos()).isAir()){
-            OhMyMeteors.LOGGER.warn("NOT AIR YAY:" + blockHitResult.getType());
+
             this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), 10, World.ExplosionSourceType.NONE);
+
+            if(!this.getWorld().isClient()){
+                OhMyMeteors.LOGGER.warn("UH Helllooooo?:" + blockHitResult.getType());
+                StructurePlacerAPI placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("proto_meteor"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, 0, 0));
+                placer.loadStructure();
+            }
+
             this.discard();
         }
         super.onBlockHit(blockHitResult);
