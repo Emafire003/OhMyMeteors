@@ -11,13 +11,13 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ChunkTicketType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.explosion.ExplosionBehavior;
@@ -34,6 +34,8 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     //TODO implement
     public static final int MIN_SIZE = 1;
     public static final int MAX_SIZE = 127;
+    //TODO needs proper testing
+    private static final ChunkTicketType<Vec3i> METEOR_CHUCK_TICKET = ChunkTicketType.create("meteor", Vec3i::compareTo, 5*20);
 
     public MeteorProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
         super(OMMEntities.METEOR_PROJECTILE_ENTITY, world);
@@ -67,9 +69,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         int i = MathHelper.clamp(size, 1, 127);
         this.dataTracker.set(SIZE, i);
         this.refreshPosition();
-        OhMyMeteors.LOGGER.info("The before dimensions are: " + getDimensions(getPose()));
         this.calculateDimensions();
-        OhMyMeteors.LOGGER.info("The after dimensions are: " + getDimensions(getPose()));
     }
 
     public int getSize() {
@@ -138,6 +138,30 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     public EntityDimensions getDimensions(EntityPose pose) {
         return super.getDimensions(pose);
     }*/
+
+    int loadingChuckTicks = 0;
+    ChunkPos currentlyLoadedChunk;
+
+    @Override
+    public void tick() {
+        super.tick();
+        //Every 100 seconds or every time the meteor enters a new chuck, the meteor loads the chunk it's in for 5 seconds or 100 ticks
+        if(this.getWorld() instanceof ServerWorld world){
+            if(loadingChuckTicks > 0){
+                if(currentlyLoadedChunk == null || !currentlyLoadedChunk.equals(this.getChunkPos())){
+                    world.getChunkManager().addTicket(METEOR_CHUCK_TICKET,  this.getChunkPos(), 1, this.getBlockPos());
+                    currentlyLoadedChunk = this.getChunkPos();
+                    loadingChuckTicks = 5*20;
+                }
+                loadingChuckTicks++;
+                return;
+            }
+
+            world.getChunkManager().addTicket(METEOR_CHUCK_TICKET,  this.getChunkPos(), 1, this.getBlockPos());
+            currentlyLoadedChunk = this.getChunkPos();
+            loadingChuckTicks = 5*20;
+        }
+    }
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {

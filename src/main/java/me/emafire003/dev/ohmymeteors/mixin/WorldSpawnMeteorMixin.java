@@ -1,8 +1,11 @@
 package me.emafire003.dev.ohmymeteors.mixin;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -50,12 +53,15 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
         }
         if(this.getRandom().nextBetween(0, 100) == 59){
 
-            if(this.getRandomAlivePlayer() == null){
-                OhMyMeteors.LOGGER.error("There were no players online for some reason!");
+            PlayerEntity p = this.getRandomAlivePlayer();
+
+            if(p == null){
+                //for some reason it won't detetct that there is player online sometimes
+                //TODO maybe use loaded chunkc instead somehow?
                 return;
             }
 
-            Vec3d playerPos = this.getRandomAlivePlayer().getPos();
+            Vec3d playerPos = p.getPos();
             //TODO add possibility to track directly the player aka send the meteord towards them
             MeteorProjectileEntity meteor = new MeteorProjectileEntity(this);
 
@@ -85,9 +91,12 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
             }
 
             meteor.setSize(this.getRandom().nextBetween(1, 5));
-            meteor.setVelocity(this.getRandom().nextFloat()*invert_x, -1.0f+this.getRandom().nextFloat(), this.getRandom().nextFloat()*invert_y);
+            meteor.setVelocity((this.getRandom().nextFloat()/2)*invert_x, -1.0f+this.getRandom().nextFloat(), (this.getRandom().nextFloat()/2)*invert_y);
 
-            this.getRandomAlivePlayer().sendMessage(Text.literal("Meteor spawned at: " + meteor.getPos()));
+            //TODO debug remove
+            if (true){
+                p.teleport(meteor.getX(), p.getY(), meteor.getZ(), false);
+            }
 
             this.spawnEntity(meteor);
             meteorCooldown = 20*50; //One every 50 seconds
