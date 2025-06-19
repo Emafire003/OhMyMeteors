@@ -39,12 +39,30 @@ public class MeteorProjectileEntityRenderer extends EntityRenderer<MeteorProject
         this.model.render(matrices, vertexconsumer, light, OverlayTexture.DEFAULT_UV);
 
         matrices.pop();*/
+
+        matrices.push();
         VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
                 this.model.getLayer(Identifier.ofVanilla("textures/block/smooth_basalt.png")), false, false);
 
+        matrices.translate(0, -entity.getDimensions(entity.getPose()).height()/1.5, 0);
+
+        matrices.scale(entity.getSize(), entity.getSize(), entity.getSize());
+
         this.model.render(matrices, vertexconsumer, light, OverlayTexture.DEFAULT_UV);
+
+        matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
+
+    /*protected void scale(MeteorProjectileEntity entity, MatrixStack matrixStack, float f) {
+        float g = 0.999F;
+        matrixStack.scale(0.999F, 0.999F, 0.999F);
+        matrixStack.translate(0.0F, 0.001F, 0.0F);
+        float h = entity.getSize();
+        float i = MathHelper.lerp(f, slimeEntity.lastStretch, slimeEntity.stretch) / (h * 0.5F + 1.0F);
+        float j = 1.0F / (i + 1.0F);
+        matrixStack.scale(j * h, 1.0F / j * h, j * h);
+    }*/
 
     @Override
     public Identifier getTexture(MeteorProjectileEntity entity) {

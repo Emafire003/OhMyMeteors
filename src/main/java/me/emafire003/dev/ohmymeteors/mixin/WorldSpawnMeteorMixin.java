@@ -10,6 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.StructureWorldAccess;
@@ -32,6 +33,8 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
     @Shadow @Nullable public abstract ServerPlayerEntity getRandomAlivePlayer();
 
     @Shadow public abstract boolean spawnEntity(Entity entity);
+
+    @Shadow public abstract RandomSequencesState getRandomSequences();
 
     @Unique
     int meteorCooldown = 0;
@@ -81,7 +84,8 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
                 invert_y = -1;
             }
 
-            meteor.setVelocity(this.getRandom().nextFloat()*invert_x, -1.0f, this.getRandom().nextFloat()*invert_y);
+            meteor.setSize(this.getRandom().nextBetween(1, 5));
+            meteor.setVelocity(this.getRandom().nextFloat()*invert_x, -1.0f+this.getRandom().nextFloat(), this.getRandom().nextFloat()*invert_y);
 
             this.getRandomAlivePlayer().sendMessage(Text.literal("Meteor spawned at: " + meteor.getPos()));
 

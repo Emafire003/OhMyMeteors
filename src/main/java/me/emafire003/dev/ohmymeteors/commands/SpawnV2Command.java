@@ -23,6 +23,8 @@ public class SpawnV2Command implements OMMCommand {
 
             meteorProjectile.setVelocity(source.getPlayer(), source.getPlayer().getPitch(), source.getPlayer().getYaw(), 0f, 1.5f, 0f);
 
+            meteorProjectile.setSize(20);
+
             source.getWorld().spawnEntity(meteorProjectile);
             return 1;
         }catch (Exception e){
