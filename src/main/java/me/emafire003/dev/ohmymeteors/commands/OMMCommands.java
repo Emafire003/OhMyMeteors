@@ -28,7 +28,7 @@ public class OMMCommands {
 
         OMMCommand[] commands = new OMMCommand[] {
                 new SpawnMeteorCommand(),
-                new SpawnV2Command()
+                new ReloadConfigCommand()
         };
 
         for (OMMCommand command : commands) {

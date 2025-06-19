@@ -2,6 +2,7 @@ package me.emafire003.dev.ohmymeteors.entities;
 
 import com.google.common.annotations.VisibleForTesting;
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
+import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.structureplacerapi.StructurePlacerAPI;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
@@ -10,6 +11,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
@@ -109,11 +112,14 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         super.onTrackedDataSet(data);
     }
 
-    @Nullable
+    /**
+     * Initializes the meteor with a random size upon creation of the meteor object.
+     * Called along with the constructor method
+     * */
     public void initialize() {
         Random random = this.getRandom();
         int i = random.nextInt(3);
-        if (i < 2 && random.nextFloat() < 0.5F) {
+        if (i < 2 && random.nextFloat() < 0.5f) {
             i++;
         }
         int j = 1 << i;
@@ -123,24 +129,12 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
     @Override
     public final EntityDimensions getDimensions(EntityPose pose) {
-        return super.getDimensions(pose).scaled(this.getSize());}
-
-    /*protected EntityDimensions getBaseDimensions(EntityPose pose) {
-        return this.getType().getDimensions().scaled(this.getScaleFactor());
+        return super.getDimensions(pose).scaled(this.getSize());
     }
 
-    @Override
-    public EntityDimensions getBaseDimensions(EntityPose pose) {
-        return super.getBaseDimensions(pose).scaled(this.getSize());
-    }
-
-    @Override
-    public EntityDimensions getDimensions(EntityPose pose) {
-        return super.getDimensions(pose);
-    }*/
-
-    int loadingChuckTicks = 0;
-    ChunkPos currentlyLoadedChunk;
+    /// these things are used to keep track of a chunk load, in order to not send a loading ticket each tick
+    private int loadingChuckTicks = 0;
+    private ChunkPos currentlyLoadedChunk;
 
     @Override
     public void tick() {
@@ -163,12 +157,19 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         }
     }
 
+    /// This is the main method which does the meteor stuff on impact
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
-
+        super.onBlockHit(blockHitResult);
         BlockState state = this.getWorld().getBlockState(blockHitResult.getBlockPos());
-        //would be weird for a meteor to stop for some leaves, like on top of a random tree
-        if(! (state.isAir() || state.isIn(BlockTags.LEAVES))){
+
+        //It also registers Air blocks as a collision so we need to avoid such cases
+        if(!state.isAir()){
+            //If bypass leaves is false skip directly to the other code
+            if(Config.SHOULD_BYPASS_LEAVES && state.isIn(BlockTags.LEAVES)){
+                //Early return so the rest of the code doesn't run if the meteor hits a leaves block and the config option is there
+                return;
+            }
             //this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), 10, World.ExplosionSourceType.NONE);
 
 
@@ -184,7 +185,12 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
             this.discard();
         }
-        super.onBlockHit(blockHitResult);
+    }
+
+    //TODO override the tick method where this is used and use some of ParticleAnimationLib effects
+    @Nullable
+    protected ParticleEffect getParticleType() {
+        return ParticleTypes.FLASH;
     }
 
     @Override

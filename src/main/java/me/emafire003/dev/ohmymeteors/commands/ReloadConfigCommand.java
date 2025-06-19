@@ -9,8 +9,9 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
-public class SpawnV2Command implements OMMCommand {
+public class ReloadConfigCommand implements OMMCommand {
 
+    //TODO implement
     private int reloadConfig(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         try{
             ServerCommandSource source = context.getSource();
