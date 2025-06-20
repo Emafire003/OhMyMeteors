@@ -218,6 +218,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
             //TODO for some reason this doesn't work, make sure it's this here or the API later on
             if(!this.getWorld().isClient()){
+                //TODO read all the filenames inside the /structre/
                 StructurePlacerAPI placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("proto_meteor"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, 0, 0));
                 placer.loadStructure();
             }
