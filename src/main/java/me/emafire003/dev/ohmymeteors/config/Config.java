@@ -22,22 +22,22 @@ public class Config {
     public static int NATURAL_METEOR_MAX_SIZE = 5;
 
     public static int MIN_METEOR_SPAWN_DISTANCE = 2; //As in a radius of blocks around the player in which the meteor won't spawn in (but remember that it can have an angled trajectory)
-    public static int MAX_METEOR_SPAWN_DISTANCE = 25; //TODO probably increase it back to 50?
+    public static int MAX_METEOR_SPAWN_DISTANCE = 30; //TODO probably increase it back to 50?
 
-    public static int METEOR_SPAWN_HEIGHT = 300; //At which y should meteors spawn?
+    public static int METEOR_SPAWN_HEIGHT = 300; //At which y level should meteors spawn?
 
     public static boolean SHOULD_BYPASS_LEAVES = true; //Should the meteor bypass leaves instead of exploding midair om them?
 
     //TODO how should this work? A percentage? A fraction? For now i think i'm gonna go with 1 on the number here.
     public static int METEOR_SPAWN_CHANCE = 20000;
 
-    public static boolean INCREASE_SPAWN_AT_NIGHT = false;
+    public static boolean MODIFY_SPAWN_CHANCE_AT_NIGHT = false;
     public static int METEOR_NIGHT_SPAWN_CHANCE = 10000;
 
-    public static boolean HAVE_INTERVAL_BETWEEN_METEORS = true;
-    public static int MIN_METEOR_INTERVAL_TIME = 20; //In seconds
+    public static boolean SHOULD_COOLDOWN_BETWEEN_METEORS = true;
+    public static int MIN_METEOR_COOLDOWN_TIME = 20; //In seconds
 
-    //TODO implement homing mechanism
+    //TODO this is VERY WIP and only works if the player is rather far down from where the meteor spawns in. Like i might delete this instead
     public static boolean HOMING_METEORS = false; //These would not spawn with a random direction but aim towards a selected player
 
     public static boolean ALLOW_TARGET_SAME_PLAYER = true; //Would allow a meteor to appear around a player that has already spawned the last meteor close to them
@@ -109,17 +109,24 @@ public class Config {
 
         configs.addKeyValuePair(new Pair<>("max_meteor_spawn_distance", 25), "Expressed in blocks, represents the max distance (as in a radius) from the origin of the meteor " +
                 "(like a player) in which a meteor can spawn in. (Remember that it has an angled trajectory so it could end up in that area regardless)");
-/*
-        public static int METEOR_SPAWN_HEIGHT = 300; //At which y should meteors spawn?
+        configs.addKeyValuePair(new Pair<>("meteor_spawn_height", 300), "The world height (y level) at which meteors spawn in");
+        configs.addKeyValuePair(new Pair<>("meteor_spawn_chance", 20000), "Expressed as '1 in <x>' chances of spawning a meteor. For example, by default it has a chance of 1 in 20000");
+        configs.addKeyValuePair(new Pair<>("modify_spawn_chance_at_night", false),"Should the spawn rate be different during the night?");
+        configs.addKeyValuePair(new Pair<>("meteor_night_spawn_chance", 10000),"The chance for a meteor to spawn at night if enabled. Expressed as in 1 in x chances.");
 
-        public static boolean SHOULD_BYPASS_LEAVES = true; //Should the meteor bypass leaves instead of exploding midair om them?
+        configs.addKeyValuePair(new Pair<>("natural_meteor_min_size", 1),"The smallest size a natural meteor can have when spawned in. Cannot go below 1");
+        configs.addKeyValuePair(new Pair<>("natural_meteor_max_size", 5),"The biggest size a natural meteor can have when spawned in. Cannot go above 50.");
 
-        //TODO how should this work? A percentage? A fraction? For now i think i'm gonna go with 1 on the number here.
-        public static int METEOR_SPAWN_CHANCE = 20000;
+        configs.addKeyValuePair(new Pair<>("spacer", "spacer"), "");
 
-        public static boolean INCREASE_SPAWN_AT_NIGHT = false;
-        public static int METEOR_NIGHT_SPAWN_CHANCE = 10000;
-*/
+        configs.addKeyValuePair(new Pair<>("should_bypass_leaves", true),"Should meteors bypass leaves blocks instead of colliding with them midair?");
+        configs.addKeyValuePair(new Pair<>("homing_meteors", false),"Should meteors be (more or less) directed towards the nearest player?");
+
+        configs.addKeyValuePair(new Pair<>("spacer", "spacer"), "");
+
+        configs.addKeyValuePair(new Pair<>("should_cooldown_between_meteors", true),"Should there be a cooldown between a meteor spawning one meteor and then another?");
+        configs.addKeyValuePair(new Pair<>("min_meteor_cooldown_time", 20),"The minimum time interval (in seconds) between spawning a meteor and then another");
+
 
     }
 
@@ -133,7 +140,21 @@ public class Config {
 
         VERSION = CONFIG.getOrDefault("version", ver);
 
-        //AREA_OF_SEARCH_FOR_ENTITIES = CONFIG.getOrDefault("area_of_search_for_entities", 12);
+        MIN_METEOR_SPAWN_DISTANCE = CONFIG.getOrDefault("min_meteor_spawn_distance", 2);
+        MAX_METEOR_SPAWN_DISTANCE = CONFIG.getOrDefault("max_meteor_spawn_distance", 30);
+        MIN_METEOR_SPAWN_DISTANCE = CONFIG.getOrDefault("min_meteor_spawn_distance", 2);
+        METEOR_SPAWN_HEIGHT = CONFIG.getOrDefault("meteor_spawn_height", 300);
+        METEOR_SPAWN_CHANCE = CONFIG.getOrDefault("meteor_spawn_chance", 20000);
+        MODIFY_SPAWN_CHANCE_AT_NIGHT = CONFIG.getOrDefault("modify_spawn_chance_at_night", false);
+        METEOR_NIGHT_SPAWN_CHANCE = CONFIG.getOrDefault("meteor_night_spawn_chance", 10000);
+        NATURAL_METEOR_MIN_SIZE = CONFIG.getOrDefault("natural_meteor_min_size", 1);
+        NATURAL_METEOR_MAX_SIZE = CONFIG.getOrDefault("natural_meteor_max_size", 5);
+
+        SHOULD_BYPASS_LEAVES = CONFIG.getOrDefault("should_bypass_leaves", true);
+        HOMING_METEORS = CONFIG.getOrDefault("homing_meteors", false);
+
+        SHOULD_COOLDOWN_BETWEEN_METEORS = CONFIG.getOrDefault("should_cooldown_between_meteors", true);
+        MIN_METEOR_COOLDOWN_TIME = CONFIG.getOrDefault("min_meteor_cooldown_time", 20);
     }
 }
 

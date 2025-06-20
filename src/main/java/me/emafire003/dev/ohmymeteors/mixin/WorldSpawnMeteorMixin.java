@@ -4,13 +4,13 @@ import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.util.profiler.Profiler;
@@ -30,6 +30,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+
+//TODO maybe also add that when a new chunk is loaded or generated there is a chance to spawn a meteor.
+//(there would be a way to like list all of the loaded chunks but it seems a bit impractical when we can just target a random online player)
 @Mixin(ServerWorld.class)
 public abstract class WorldSpawnMeteorMixin extends World implements StructureWorldAccess {
 
@@ -46,22 +49,26 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
     public void tickSpawnMeteor(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
+        //TODO remove when finished testing
         if(OhMyMeteors.debugSpawningOff){
             return;
         }
 
-        if(meteorCooldown > 0){
+
+
+        if(Config.SHOULD_COOLDOWN_BETWEEN_METEORS && meteorCooldown > 0){
             meteorCooldown = meteorCooldown - 1;
+            return; //Hey. this return is important. I totally haven't discovered i forgot to put it here because like 200 meteors spawned in the span of a second in my face. Not at all.
         }
+
 
         int chance = Config.METEOR_SPAWN_CHANCE;
 
-        if(Config.INCREASE_SPAWN_AT_NIGHT){
+        if(Config.MODIFY_SPAWN_CHANCE_AT_NIGHT && this.isNight()){
             chance = Config.METEOR_NIGHT_SPAWN_CHANCE;
         }
 
         if(this.getRandom().nextBetween(0, chance) == 0){
-
             PlayerEntity p = this.getRandomAlivePlayer();
 
             if(p == null){
@@ -100,15 +107,16 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
                 invert_y = -1;
             }
 
-            meteor.setSize(this.getRandom().nextBetween(1, 5));
+            meteor.setSize(this.getRandom().nextBetween(Math.max(0, Config.NATURAL_METEOR_MIN_SIZE), Math.min(50, Config.NATURAL_METEOR_MAX_SIZE)));
 
+            //TODO this is VERY WIP and only works if the player is rather far down from where the meteor spawns in. Like i might delete this instead
             if(Config.HOMING_METEORS){
                 Vec3d vec3d = meteor.getRotationVec(1.0F);
                 double f = p.getX() - (meteor.getX() + vec3d.x * 4.0);
                 double g = p.getBodyY(0.5) - (0.5 + meteor.getBodyY(0.5));
                 double h = p.getZ() - (meteor.getZ() + vec3d.z * 4.0);
                 Vec3d vec3d2 = new Vec3d(f, g, h);
-                meteor.setVelocity(vec3d2);
+                meteor.setVelocity(vec3d2.multiply(1f, 0.01f, 1f));
             }else{
                 meteor.setVelocity((this.getRandom().nextFloat()/2)*invert_x, -1.0f+this.getRandom().nextFloat(), (this.getRandom().nextFloat()/2)*invert_y);
 
@@ -116,12 +124,15 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
 
             //TODO debug remove
             if (true){
-                p.teleport(meteor.getX(), p.getY(), meteor.getZ(), false);
+                //p.teleport(meteor.getX(), p.getY(), meteor.getZ(), false);
+                p.sendMessage(Text.literal("spawning meteor at: " + meteor.getPos() + " whit size: " + meteor.getSize()));
             }
 
             this.spawnEntity(meteor);
-            //TODO actually implement using the config and such
-            meteorCooldown = 20*50; //One every 50 seconds
+
+            if(Config.SHOULD_COOLDOWN_BETWEEN_METEORS){
+                meteorCooldown = 20*Config.MIN_METEOR_COOLDOWN_TIME;
+            }
         }
     }
 
