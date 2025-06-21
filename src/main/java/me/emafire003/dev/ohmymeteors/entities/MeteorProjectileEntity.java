@@ -28,6 +28,9 @@ import net.minecraft.world.*;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * The projectile entity that gets spawned as a meteor.
@@ -239,7 +242,30 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
      * */
     //TODO implement
     public void detonateScatter(){
-        
+        if(this.getWorld().isClient()){
+            return;
+        }
+
+        //Can generate a minimum of 1 new meteor up to a number equal half of the size of this meteor
+        int scatter_into = this.getRandom().nextBetween(1, this.getSize()/2);
+        //this is used to determine the size of the new meteors, which will be smaller than the original
+        //each new meteor is going to take up some of the "mass" of the parent one, leaving the rest for the next one
+        //and so on.
+        int remainingSize = this.getSize()/2+1;
+
+        List<MeteorProjectileEntity> newMeteors = new ArrayList<>();
+        for(int i = 0; i<scatter_into; i++){
+            //Gets a random number between 1 and the remaining size, making sure to leave at least one size for each new meteor yet to generate)
+            int size =  this.getRandom().nextBetween(1, remainingSize-(scatter_into-i));
+            newMeteors.add(getDownwardsMeteor(this.getPos(), (ServerWorld) this.getWorld(), 1, 10+this.getSize() /2, this.getPos().getY(), size, size, false));
+        }
+
+        this.detonateSimple();
+
+        newMeteors.forEach( meteorProjectileEntity -> {
+            this.getWorld().spawnEntity(meteorProjectileEntity);
+        });
+
     }
 
     /// This is the main method which does the meteor stuff on impact
@@ -275,8 +301,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     /**
      * Gets a meteor object to be spawned in, with a velocity oriented dowards and a spawn position already set up
      * */
-    public static MeteorProjectileEntity getDownwardsMeteor(Vec3d originPos, ServerWorld world, int min_spawn_d, int max_spawn_d, int spawn_height, int min_size, int max_size, boolean homing){
-        //TODO add possibility to track directly the player aka send the meteord towards them
+    public static MeteorProjectileEntity getDownwardsMeteor(Vec3d originPos, ServerWorld world, int min_spawn_d, int max_spawn_d, double spawn_height, int min_size, int max_size, boolean homing){
         MeteorProjectileEntity meteor = new MeteorProjectileEntity(world);
 
         //The invert is to also have a chance at having negative coordinates, otherwise they would always be positive
