@@ -11,8 +11,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.StructureWorldAccess;
@@ -40,9 +38,9 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
 
     @Shadow public abstract boolean spawnEntity(Entity entity);
 
-    @Shadow public abstract RandomSequencesState getRandomSequences();
-
     @Shadow public abstract ChunkManager getChunkManager();
+
+    @Shadow public abstract ServerWorld toServerWorld();
 
     @Unique
     int meteorCooldown = 0;
@@ -77,50 +75,8 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
                 return;
             }
 
-            Vec3d playerPos = p.getPos();
-            //TODO add possibility to track directly the player aka send the meteord towards them
-            MeteorProjectileEntity meteor = new MeteorProjectileEntity(this);
-
-            //The invert is to also have a chance at having negative coordinates, otherwise they would always be positive
-            int invert_x = 1;
-            if(this.getRandom().nextBoolean()){
-                invert_x = -1;
-            }
-
-            int invert_y = 1;
-            if(this.getRandom().nextBoolean()){
-                invert_y = -1;
-            }
-
-            meteor.setPos(playerPos.getX()+this.getRandom().nextBetween(Config.MIN_METEOR_SPAWN_DISTANCE, Config.MAX_METEOR_SPAWN_DISTANCE)*invert_x,
-                    Config.METEOR_SPAWN_HEIGHT,
-                    playerPos.getZ()+this.getRandom().nextBetween(Config.MIN_METEOR_SPAWN_DISTANCE, Config.MAX_METEOR_SPAWN_DISTANCE)*invert_y
-            );
-
-            invert_x = 1;
-            if(this.getRandom().nextBoolean()){
-                invert_x = -1;
-            }
-
-            invert_y = 1;
-            if(this.getRandom().nextBoolean()){
-                invert_y = -1;
-            }
-
-            meteor.setSize(this.getRandom().nextBetween(Math.max(0, Config.NATURAL_METEOR_MIN_SIZE), Math.min(50, Config.NATURAL_METEOR_MAX_SIZE)));
-
-            //TODO this is VERY WIP and only works if the player is rather far down from where the meteor spawns in. Like i might delete this instead
-            if(Config.HOMING_METEORS){
-                Vec3d vec3d = meteor.getRotationVec(1.0F);
-                double f = p.getX() - (meteor.getX() + vec3d.x * 4.0);
-                double g = p.getBodyY(0.5) - (0.5 + meteor.getBodyY(0.5));
-                double h = p.getZ() - (meteor.getZ() + vec3d.z * 4.0);
-                Vec3d vec3d2 = new Vec3d(f, g, h);
-                meteor.setVelocity(vec3d2.multiply(1f, 0.01f, 1f));
-            }else{
-                meteor.setVelocity((this.getRandom().nextFloat()/2)*invert_x, -1.0f+this.getRandom().nextFloat(), (this.getRandom().nextFloat()/2)*invert_y);
-
-            }
+            MeteorProjectileEntity meteor = MeteorProjectileEntity.getDownwardsMeteor(p.getPos(), this.toServerWorld(),
+                    Config.MIN_METEOR_SPAWN_DISTANCE, Config.MAX_METEOR_SPAWN_DISTANCE, Config.METEOR_SPAWN_HEIGHT, Config.NATURAL_METEOR_MIN_SIZE, Config.NATURAL_METEOR_MAX_SIZE, Config.HOMING_METEORS);
 
             //TODO debug remove
             if (true){

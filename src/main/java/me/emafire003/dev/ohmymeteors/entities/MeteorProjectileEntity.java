@@ -3,6 +3,8 @@ package me.emafire003.dev.ohmymeteors.entities;
 import com.google.common.annotations.VisibleForTesting;
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import me.emafire003.dev.ohmymeteors.config.Config;
+import me.emafire003.dev.particleanimationlib.effects.VortexEffect;
+import me.emafire003.dev.particleanimationlib.effects.base.YPREffect;
 import me.emafire003.dev.structureplacerapi.StructurePlacerAPI;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
@@ -139,6 +141,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     @Override
     public void tick() {
         super.tick();
+        particleAnimation();
         //Every 100 seconds or every time the meteor enters a new chuck, the meteor loads the chunk it's in for 5 seconds or 100 ticks
         if(this.getWorld() instanceof ServerWorld world){
             if(loadingChuckTicks > 0){
@@ -157,6 +160,88 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         }
     }
 
+    int particleCooldown = 0;
+    //The particle effect that is going to be spawned once every second by the falling meteor
+    YPREffect particleEffect;
+
+    //pal vortex minecraft:flame ~ ~ ~ 1 0.01 0.8 0.1 5 3 10 false 3
+    /**
+     * Spawns the vortex particle effect behind the meteor once every second*/
+    //TODO this has simply decided to stop working on its own. AUBDfusvGF hSVIDgyscDyagsd cia
+    public void particleAnimation(){
+        if(this.getWorld().isClient()){
+            return;
+        }
+        //Initializes the effect. Can't do it before since i need to be sure i'm on the server instead of the client
+        if(particleEffect == null){
+            //TODO ok maybe an inveted cone?
+            ///pal cone minecraft:flame ~ ~ ~ 100 4 2 0.1 0.03 2 2 false true true 3
+            /*particleEffect = ConeEffect
+                    .builder((ServerWorld) this.getWorld(), ParticleTypes.FLAME, this.getPos())
+                    .particlesCone(100).particles(10).strands(2).lengthGrow(0.1f)
+                    .radiusGrow(0.03f).inverted(true).randomize(true).angularVelocity(2).solid(false)
+                    .rotation(2)
+                    .yaw(this.getYaw()).pitch(this.getPitch())
+                    .secondaryParticle(ParticleTypes.FLAME)
+                    .updatePositions(true).entityOrigin(this)
+                    .build();*/
+            particleEffect = VortexEffect
+                    .builder((ServerWorld) this.getWorld(), ParticleTypes.FLAME, this.getPos())
+                    .helixes(10).circles(5).radials(5d).lengthGrow(0.1f).radius(this.getSize())
+                    .radiusGrow(0.01f).startRange((float) (this.getSize() * 80) /100)
+                    .yaw(this.getYaw()).pitch(this.getPitch())
+                    //.updatePositions(true).entityOrigin(this)
+                    .build();
+
+        }
+        //Don't run before 1 second
+        if(particleCooldown > 0){
+            particleCooldown--;
+            //return;
+        }
+        particleEffect.setYaw(this.getYaw());
+        particleEffect.setPitch(this.getPitch());
+        //Updating this because they could change after the meteor is created
+        /*particleEffect.setRadius(this.getSize());
+        particleEffect.setStartRange((float) (this.getSize() * 80) /100);*/
+
+        /*particleEffect.runFor(10, (a, b) -> {
+            OhMyMeteors.LOGGER.info("The postion is: " + a.getOriginPos());
+        });*/
+        particleCooldown = 20; //sets this to 20 aka 1 second
+    }
+    
+    
+    /** Makes this entity explode without creating any structures on impact
+     * and then discards this entity*/
+    public void detonateSimple(){
+        ExplosionBehavior explosionBehavior = new ExplosionBehavior();
+
+        //entity.getWorld().addParticle(ParticleTypes.FLASH, pos.getX(), pos.getY(), pos.getZ(), 0,0,0);
+        this.getWorld().createExplosion(this, this.getDamageSources().explosion(this, this), explosionBehavior, this.getPos(), this.getSize(), true, World.ExplosionSourceType.TNT);
+        this.discard();
+    }
+    
+    /** Like {@link #detonateSimple()} but will also spawn the structure of the meteor*/
+    public void detonateWithStructure(){
+        detonateSimple();
+        if(!this.getWorld().isClient()){
+            //TODO read the filenames of the files of the /structure/ folder thing and check the folders that have like small medium big ecc
+            StructurePlacerAPI placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("proto_meteor"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, 0, 0));
+            placer.loadStructure();
+        }
+    }
+    
+    /**This will detonate the meteor with an explosion like {@link #detonateSimple()}
+     * but will also spawn other meteors based on the size of this meteor. 
+     * 
+     * Meteors will be smaller and be oriented randomly from that point on, but will still go down.
+     * */
+    //TODO implement
+    public void detonateScatter(){
+        
+    }
+
     /// This is the main method which does the meteor stuff on impact
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
@@ -172,18 +257,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
             }
             //this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), 10, World.ExplosionSourceType.NONE);
 
-
-            ExplosionBehavior explosionBehavior = new ExplosionBehavior();
-
-            //entity.getWorld().addParticle(ParticleTypes.FLASH, pos.getX(), pos.getY(), pos.getZ(), 0,0,0);
-            this.getWorld().createExplosion(this, this.getDamageSources().explosion(this, this), explosionBehavior, this.getPos(), this.getSize(), true, World.ExplosionSourceType.TNT);
-
-            if(!this.getWorld().isClient()){
-                StructurePlacerAPI placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("proto_meteor"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, 0, 0));
-                placer.loadStructure();
-            }
-
-            this.discard();
+            this.detonateWithStructure();
         }
     }
 
@@ -196,5 +270,55 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
+    }
+    
+    /**
+     * Gets a meteor object to be spawned in, with a velocity oriented dowards and a spawn position already set up
+     * */
+    public static MeteorProjectileEntity getDownwardsMeteor(Vec3d originPos, ServerWorld world, int min_spawn_d, int max_spawn_d, int spawn_height, int min_size, int max_size, boolean homing){
+        //TODO add possibility to track directly the player aka send the meteord towards them
+        MeteorProjectileEntity meteor = new MeteorProjectileEntity(world);
+
+        //The invert is to also have a chance at having negative coordinates, otherwise they would always be positive
+        int invert_x = 1;
+        if(world.getRandom().nextBoolean()){
+            invert_x = -1;
+        }
+
+        int invert_y = 1;
+        if(world.getRandom().nextBoolean()){
+            invert_y = -1;
+        }
+
+        meteor.setPos(originPos.getX()+world.getRandom().nextBetween(min_spawn_d, max_spawn_d)*invert_x,
+                spawn_height,
+                originPos.getZ()+world.getRandom().nextBetween(min_spawn_d, max_spawn_d)*invert_y
+        );
+
+        invert_x = 1;
+        if(world.getRandom().nextBoolean()){
+            invert_x = -1;
+        }
+
+        invert_y = 1;
+        if(world.getRandom().nextBoolean()){
+            invert_y = -1;
+        }
+
+        meteor.setSize(world.getRandom().nextBetween(Math.max(0, min_size), Math.min(50, max_size)));
+
+        //TODO world is VERY WIP and only works if the player is rather far down from where the meteor spawns in. Like i might delete world instead
+        if(homing){
+            Vec3d vec3d = meteor.getRotationVec(1.0F);
+            double f = originPos.getX() - (meteor.getX() + vec3d.x * 4.0);
+            double g = /*originPos.getBodyY(0.5)*/ originPos.getY() - (0.5 + meteor.getBodyY(0.5));
+            double h = originPos.getZ() - (meteor.getZ() + vec3d.z * 4.0);
+            Vec3d vec3d2 = new Vec3d(f, g, h);
+            meteor.setVelocity(vec3d2.multiply(1f, 0.01f, 1f));
+        }else{
+            meteor.setVelocity((world.getRandom().nextFloat()/2)*invert_x, -1.0f+world.getRandom().nextFloat(), (world.getRandom().nextFloat()/2)*invert_y);
+
+        }
+        return meteor;
     }
 }
