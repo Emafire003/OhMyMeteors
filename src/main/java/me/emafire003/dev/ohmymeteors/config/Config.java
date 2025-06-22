@@ -41,6 +41,13 @@ public class Config {
     public static boolean HOMING_METEORS = false; //These would not spawn with a random direction but aim towards a selected player
 
     public static boolean ALLOW_TARGET_SAME_PLAYER = true; //Would allow a meteor to appear around a player that has already spawned the last meteor close to them
+
+    public static boolean METEOR_GRIEFING = true;
+    public static boolean SCATTER_METEOR_GRIEFING = true;
+
+    public static boolean METEOR_STRUCTURE = true;
+    public static boolean SCATTER_METEOR_STRUCTURE = true;
+
     /*public static Map<String, Object> OPTIONS = Map.of(
             ""
     );*/
@@ -127,6 +134,12 @@ public class Config {
         configs.addKeyValuePair(new Pair<>("should_cooldown_between_meteors", true),"Should there be a cooldown between a meteor spawning one meteor and then another?");
         configs.addKeyValuePair(new Pair<>("min_meteor_cooldown_time", 20),"The minimum time interval (in seconds) between spawning a meteor and then another");
 
+        configs.addKeyValuePair(new Pair<>("meteor_griefing", true),"Should meteors be able to destroy blocks on impact?");
+        configs.addKeyValuePair(new Pair<>("scatter_meteor_griefing", true),"Should the meteors that come out of a bigger meteor when it's broken be able to destroy blocks on impact?");
+
+        configs.addKeyValuePair(new Pair<>("meteor_structure", true),"Should meteors spawn the meteor structure after impact?");
+        configs.addKeyValuePair(new Pair<>("scatter_meteor_structure", true),"Should the meteors that come out of a bigger meteor when it's broken be able to destroy spawn structures on impact?");
+
 
     }
 
@@ -155,6 +168,11 @@ public class Config {
 
         SHOULD_COOLDOWN_BETWEEN_METEORS = CONFIG.getOrDefault("should_cooldown_between_meteors", true);
         MIN_METEOR_COOLDOWN_TIME = CONFIG.getOrDefault("min_meteor_cooldown_time", 20);
+
+        METEOR_GRIEFING = CONFIG.getOrDefault("meteor_griefing", true);
+        SCATTER_METEOR_GRIEFING = CONFIG.getOrDefault("scatter_meteor_griefing", true);
+        METEOR_STRUCTURE = CONFIG.getOrDefault("meteor_structure", true);
+        SCATTER_METEOR_STRUCTURE = CONFIG.getOrDefault("scatter_meteor_structure", true);
     }
 }
 

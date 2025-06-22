@@ -2,16 +2,19 @@ package me.emafire003.dev.ohmymeteors.entities;
 
 import com.google.common.annotations.VisibleForTesting;
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
+import me.emafire003.dev.ohmymeteors.blocks.events.MeteorSpawnEvent;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.particleanimationlib.effects.VortexEffect;
 import me.emafire003.dev.particleanimationlib.effects.base.YPREffect;
 import me.emafire003.dev.structureplacerapi.StructurePlacerAPI;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -25,11 +28,13 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
+import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -39,11 +44,12 @@ import java.util.List;
 public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
     private static final TrackedData<Integer> SIZE = DataTracker.registerData(MeteorProjectileEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    //TODO implement
-    public static final int MIN_SIZE = 1;
-    public static final int MAX_SIZE = 127;
     //TODO needs proper testing
     private static final ChunkTicketType<Vec3i> METEOR_CHUCK_TICKET = ChunkTicketType.create("meteor", Vec3i::compareTo, 5*20);
+
+    /// Aka a meteor that is a result of the {@link #detonateScatter()} method
+    protected boolean isScatterMeteor = false;
+
 
     public MeteorProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
         super(OMMEntities.METEOR_PROJECTILE_ENTITY, world);
@@ -129,6 +135,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         }
         int j = 1 << i;
         this.setSize(j);
+        MeteorSpawnEvent.EVENT.invoker().meteorSpawned(this);
     }
 
 
@@ -220,8 +227,30 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     public void detonateSimple(){
         ExplosionBehavior explosionBehavior = new ExplosionBehavior();
 
+        ExplosionBehavior safeExplosion = new ExplosionBehavior() {
+            @Override
+            public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
+                return Optional.of(Blocks.BEDROCK.getBlastResistance());
+            }
+        };
+
+        if(isScatterMeteor()){
+            if(Config.SCATTER_METEOR_GRIEFING){
+                this.getWorld().createExplosion(this, this.getDamageSources().explosion(this, this), explosionBehavior, this.getPos(), this.getSize(), true, World.ExplosionSourceType.TNT);
+            }else{
+                this.getWorld().createExplosion(this, this.getDamageSources().explosion(this, this), safeExplosion, this.getPos(), this.getSize(), false, World.ExplosionSourceType.TNT);
+            }
+            this.discard();
+            return;
+        }
+
+        if(Config.METEOR_GRIEFING){
+            //TODO add custom  explosion source type
+            this.getWorld().createExplosion(this, this.getDamageSources().explosion(this, this), explosionBehavior, this.getPos(), this.getSize(), true, World.ExplosionSourceType.TNT);
+        }else{
+            this.getWorld().createExplosion(this, this.getDamageSources().explosion(this, this), safeExplosion, this.getPos(), this.getSize(), false, World.ExplosionSourceType.TNT);
+        }
         //entity.getWorld().addParticle(ParticleTypes.FLASH, pos.getX(), pos.getY(), pos.getZ(), 0,0,0);
-        this.getWorld().createExplosion(this, this.getDamageSources().explosion(this, this), explosionBehavior, this.getPos(), this.getSize(), true, World.ExplosionSourceType.TNT);
         this.discard();
     }
     
@@ -257,14 +286,14 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         for(int i = 0; i<scatter_into; i++){
             //Gets a random number between 1 and the remaining size, making sure to leave at least one size for each new meteor yet to generate)
             int size =  this.getRandom().nextBetween(1, remainingSize-(scatter_into-i));
-            newMeteors.add(getDownwardsMeteor(this.getPos(), (ServerWorld) this.getWorld(), 1, 10+this.getSize() /2, this.getPos().getY(), size, size, false));
+            MeteorProjectileEntity m = getDownwardsMeteor(this.getPos(), (ServerWorld) this.getWorld(), 1, 10+this.getSize() /2, this.getPos().getY(), size, size, false);
+            m.setScatterMeteor(true);
+            newMeteors.add(m);
         }
 
         this.detonateSimple();
 
-        newMeteors.forEach( meteorProjectileEntity -> {
-            this.getWorld().spawnEntity(meteorProjectileEntity);
-        });
+        newMeteors.forEach( meteorProjectileEntity -> this.getWorld().spawnEntity(meteorProjectileEntity));
 
     }
 
@@ -283,7 +312,21 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
             }
             //this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), 10, World.ExplosionSourceType.NONE);
 
-            this.detonateWithStructure();
+            if(this.isScatterMeteor()){
+                if(Config.SCATTER_METEOR_STRUCTURE){
+                    this.detonateWithStructure();
+                }else{
+                    this.detonateSimple();
+                }
+                return;
+            }
+
+            if(Config.METEOR_STRUCTURE){
+                this.detonateWithStructure();
+            }else{
+                this.detonateSimple();
+            }
+
         }
     }
 
@@ -345,5 +388,13 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
         }
         return meteor;
+    }
+
+    public boolean isScatterMeteor() {
+        return isScatterMeteor;
+    }
+
+    public void setScatterMeteor(boolean scatterMeteor) {
+        isScatterMeteor = scatterMeteor;
     }
 }
