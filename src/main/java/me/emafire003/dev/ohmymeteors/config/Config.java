@@ -20,7 +20,7 @@ public class Config {
     //TODO add option for annoucing meteors spawns in chat
 
     public static int NATURAL_METEOR_MIN_SIZE = 1; //as in the ones that spawn from the sky not the ones you can summon
-    public static int NATURAL_METEOR_MAX_SIZE = 5;
+    public static int NATURAL_METEOR_MAX_SIZE = 7;
 
     public static int MIN_METEOR_SPAWN_DISTANCE = 2; //As in a radius of blocks around the player in which the meteor won't spawn in (but remember that it can have an angled trajectory)
     public static int MAX_METEOR_SPAWN_DISTANCE = 30; //TODO probably increase it back to 50?
@@ -41,7 +41,9 @@ public class Config {
     //TODO this is VERY WIP and only works if the player is rather far down from where the meteor spawns in. Like i might delete this instead
     public static boolean HOMING_METEORS = false; //These would not spawn with a random direction but aim towards a selected player
 
-    public static boolean ALLOW_TARGET_SAME_PLAYER = true; //Would allow a meteor to appear around a player that has already spawned the last meteor close to them
+    public static boolean ANNOUNCE_METEOR_SPAWN = false;
+    public static boolean ANNOUNCE_METEOR_DESTROYED = false;
+    public static boolean ACTIONBAR_ANNOUNCEMENTS = true;
 
     public static boolean METEOR_GRIEFING = true;
     public static boolean SCATTER_METEOR_GRIEFING = true;
@@ -130,6 +132,11 @@ public class Config {
         configs.addKeyValuePair(new Pair<>("should_bypass_leaves", true),"Should meteors bypass leaves blocks instead of colliding with them midair?");
         configs.addKeyValuePair(new Pair<>("homing_meteors", false),"Should meteors be (more or less) directed towards the nearest player?");
 
+        configs.addKeyValuePair(new Pair<>("announce_meteor_spawn", false),"Should players get a message in chat/hotbar when a meteor spawns?");
+        configs.addKeyValuePair(new Pair<>("announce_meteor_destroyed", false),"Should players get a message in chat/hotbar when a meteor is destroyed?");
+        configs.addKeyValuePair(new Pair<>("actionbar_announcements", true),"Should the above announcement be displayed above the hotbar in the actionbar or in chat?");
+
+
         configs.addKeyValuePair(new Pair<>("spacer", "spacer"), "");
 
         configs.addKeyValuePair(new Pair<>("should_cooldown_between_meteors", true),"Should there be a cooldown between a meteor spawning one meteor and then another?");
@@ -169,6 +176,11 @@ public class Config {
 
         SHOULD_COOLDOWN_BETWEEN_METEORS = CONFIG.getOrDefault("should_cooldown_between_meteors", true);
         MIN_METEOR_COOLDOWN_TIME = CONFIG.getOrDefault("min_meteor_cooldown_time", 20);
+
+        ANNOUNCE_METEOR_SPAWN = CONFIG.getOrDefault("announce_meteor_spawn", false);
+        ANNOUNCE_METEOR_DESTROYED = CONFIG.getOrDefault("announce_meteor_destroyed", false);
+
+        ACTIONBAR_ANNOUNCEMENTS = CONFIG.getOrDefault("actionbar_announcements", true);
 
         METEOR_GRIEFING = CONFIG.getOrDefault("meteor_griefing", true);
         SCATTER_METEOR_GRIEFING = CONFIG.getOrDefault("scatter_meteor_griefing", true);

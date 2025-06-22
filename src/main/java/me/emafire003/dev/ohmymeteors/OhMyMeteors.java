@@ -10,6 +10,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ public class OhMyMeteors implements ModInitializer {
 	public static final String MOD_ID = "ohmymeteors";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static Path PATH = Path.of(FabricLoader.getInstance().getConfigDir() + "/" + MOD_ID + "/");
+
+	public static String PREFIX = "[Oh My, Meteors!] ";
 
 	public static Identifier getIdentifier(String path){
 		return Identifier.of(MOD_ID, path);

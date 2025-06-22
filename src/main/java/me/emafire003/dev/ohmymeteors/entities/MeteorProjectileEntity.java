@@ -269,14 +269,15 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
      * 
      * Meteors will be smaller and be oriented randomly from that point on, but will still go down.
      * */
-    //TODO implement
     public void detonateScatter(){
         if(this.getWorld().isClient()){
             return;
         }
 
+        //TODO there may be an issue with this thing like also happening with size 1?
+
         //Can generate a minimum of 1 new meteor up to a number equal half of the size of this meteor
-        int scatter_into = this.getRandom().nextBetween(1, this.getSize()/2);
+        int scatter_into = this.getRandom().nextBetween(1, Math.max(this.getSize()/2, 1));
         //this is used to determine the size of the new meteors, which will be smaller than the original
         //each new meteor is going to take up some of the "mass" of the parent one, leaving the rest for the next one
         //and so on.
@@ -285,7 +286,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         List<MeteorProjectileEntity> newMeteors = new ArrayList<>();
         for(int i = 0; i<scatter_into; i++){
             //Gets a random number between 1 and the remaining size, making sure to leave at least one size for each new meteor yet to generate)
-            int size =  this.getRandom().nextBetween(1, remainingSize-(scatter_into-i));
+            int size =  this.getRandom().nextBetween(1, Math.max(remainingSize-(scatter_into-i), 1));
             MeteorProjectileEntity m = getDownwardsMeteor(this.getPos(), (ServerWorld) this.getWorld(), 1, 10+this.getSize() /2, this.getPos().getY(), size, size, false);
             m.setScatterMeteor(true);
             newMeteors.add(m);
