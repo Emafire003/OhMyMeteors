@@ -1,4 +1,4 @@
-package me.emafire003.dev.ohmymeteors.blocks.events;
+package me.emafire003.dev.ohmymeteors.events;
 
 import me.emafire003.dev.ohmymeteors.blocks.basic_laser.BasicMeteorLaserBlock;
 

@@ -2,8 +2,9 @@ package me.emafire003.dev.ohmymeteors.entities;
 
 import com.google.common.annotations.VisibleForTesting;
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
-import me.emafire003.dev.ohmymeteors.blocks.events.MeteorSpawnEvent;
+import me.emafire003.dev.ohmymeteors.events.MeteorSpawnEvent;
 import me.emafire003.dev.ohmymeteors.config.Config;
+import me.emafire003.dev.particleanimationlib.effects.AnimatedCircleEffect;
 import me.emafire003.dev.particleanimationlib.effects.VortexEffect;
 import me.emafire003.dev.particleanimationlib.effects.base.YPREffect;
 import me.emafire003.dev.structureplacerapi.StructurePlacerAPI;
@@ -14,6 +15,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
@@ -25,6 +27,7 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
@@ -80,7 +83,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
     @VisibleForTesting
     public void setSize(int size) {
-        int i = MathHelper.clamp(size, 1, 127);
+        int i = MathHelper.clamp(size, 1, 50);
         this.dataTracker.set(SIZE, i);
         this.refreshPosition();
         this.calculateDimensions();
@@ -148,10 +151,8 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     private int loadingChuckTicks = 0;
     private ChunkPos currentlyLoadedChunk;
 
-    @Override
-    public void tick() {
-        super.tick();
-        particleAnimation();
+    /**Gets called every tick and makes sure that when the meteor travels through a chunk it is loaded*/
+    public void loadChunk(){
         //Every 100 seconds or every time the meteor enters a new chuck, the meteor loads the chunk it's in for 5 seconds or 100 ticks
         if(this.getWorld() instanceof ServerWorld world){
             if(loadingChuckTicks > 0){
@@ -170,55 +171,75 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         }
     }
 
-    int particleCooldown = 0;
-    //The particle effect that is going to be spawned once every second by the falling meteor
-    YPREffect particleEffect;
+    @Override
+    public void tick() {
+        loadChunk();
+        Entity entity = this.getOwner();
+        if (this.getWorld().isClient || (entity == null || !entity.isRemoved()) && this.getWorld().isChunkLoaded(this.getBlockPos())) {
+            super.tick();
+            if (this.isBurning()) {
+                this.setOnFireFor(1.0F);
+            }
+
+            HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit, this.getRaycastShapeType());
+            if (hitResult.getType() != HitResult.Type.MISS) {
+                this.hitOrDeflect(hitResult);
+            }
+
+            this.checkBlockCollision();
+            Vec3d vec3d = this.getVelocity();
+            double d = this.getX() + vec3d.x;
+            double e = this.getY() + vec3d.y;
+            double f = this.getZ() + vec3d.z;
+            ProjectileUtil.setRotationFromVelocity(this, 0.2F);
+            float h;
+            if (this.isTouchingWater()) {
+                for (int i = 0; i < 4; i++) {
+                    float g = 0.25F;
+                    this.getWorld().addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+                }
+
+                h = this.getDragInWater();
+            } else {
+                h = this.getDrag();
+            }
+
+            this.setVelocity(vec3d.add(vec3d.normalize().multiply(this.accelerationPower)).multiply(h));
+
+            /*ParticleEffect particleEffect = this.getParticleType();
+            if (particleEffect != null) {
+                this.getWorld().addParticle(particleEffect, d, e + 0.5, f, 0.0, 0.0, 0.0);
+            }*/
+            particleAnimation(d, e, f);
+
+            this.setPosition(d, e, f);
+        } else {
+            this.discard();
+        }
+    }
 
     //pal vortex minecraft:flame ~ ~ ~ 1 0.01 0.8 0.1 5 3 10 false 3
     /**
-     * Spawns the vortex particle effect behind the meteor once every second*/
+     * Spawns the particle effects behind the meteor*/
     //TODO this has simply decided to stop working on its own. AUBDfusvGF hSVIDgyscDyagsd cia
-    public void particleAnimation(){
+    public void particleAnimation(double d, double e, double f){
+        this.getWorld().addParticle(ParticleTypes.FLASH, d, e + 0.5, f, 0.0, 0.0, 0.0);
+        this.getWorld().addParticle(ParticleTypes.EXPLOSION, d, e + 0.5, f, 0.0, 0.0, 0.0);
+
         if(this.getWorld().isClient()){
             return;
         }
-        //Initializes the effect. Can't do it before since i need to be sure i'm on the server instead of the client
-        if(particleEffect == null){
-            //TODO ok maybe an inveted cone?
-            ///pal cone minecraft:flame ~ ~ ~ 100 4 2 0.1 0.03 2 2 false true true 3
-            /*particleEffect = ConeEffect
-                    .builder((ServerWorld) this.getWorld(), ParticleTypes.FLAME, this.getPos())
-                    .particlesCone(100).particles(10).strands(2).lengthGrow(0.1f)
-                    .radiusGrow(0.03f).inverted(true).randomize(true).angularVelocity(2).solid(false)
-                    .rotation(2)
-                    .yaw(this.getYaw()).pitch(this.getPitch())
-                    .secondaryParticle(ParticleTypes.FLAME)
-                    .updatePositions(true).entityOrigin(this)
-                    .build();*/
-            particleEffect = VortexEffect
-                    .builder((ServerWorld) this.getWorld(), ParticleTypes.FLAME, this.getPos())
-                    .helixes(10).circles(5).radials(5d).lengthGrow(0.1f).radius(this.getSize())
-                    .radiusGrow(0.01f).startRange((float) (this.getSize() * 80) /100)
-                    .yaw(this.getYaw()).pitch(this.getPitch())
-                    //.updatePositions(true).entityOrigin(this)
-                    .build();
 
-        }
-        //Don't run before 1 second
-        if(particleCooldown > 0){
-            particleCooldown--;
-            //return;
-        }
-        particleEffect.setYaw(this.getYaw());
-        particleEffect.setPitch(this.getPitch());
-        //Updating this because they could change after the meteor is created
-        /*particleEffect.setRadius(this.getSize());
-        particleEffect.setStartRange((float) (this.getSize() * 80) /100);*/
+        ///pal animatedcircle minecraft:soul_fire_flame ~ ~ ~ 100 2 0 3.14 false false true 2.0 0.0 0.0 0.0 0.0 0.0 5
 
-        /*particleEffect.runFor(10, (a, b) -> {
-            OhMyMeteors.LOGGER.info("The postion is: " + a.getOriginPos());
-        });*/
-        particleCooldown = 20; //sets this to 20 aka 1 second
+        AnimatedCircleEffect circle = AnimatedCircleEffect
+                .builder((ServerWorld) this.getWorld(), ParticleTypes.FLAME, new Vec3d(d,e,f))
+                .particles(100).radius(this.getSize()).wholeCircle(false).maxAngle(3.14)
+                .enableRotation(true).angularVelocityX(2)
+                .build();
+
+        circle.setIterations(10);
+        circle.run();
     }
     
     
@@ -270,7 +291,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
      * Meteors will be smaller and be oriented randomly from that point on, but will still go down.
      * */
     public void detonateScatter(){
-        if(this.getWorld().isClient()){
+        if(this.getWorld().isClient() || this.getSize() <= 1){
             return;
         }
 
@@ -329,12 +350,6 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
             }
 
         }
-    }
-
-    //TODO override the tick method where this is used and use some of ParticleAnimationLib effects
-    @Nullable
-    protected ParticleEffect getParticleType() {
-        return ParticleTypes.FLASH;
     }
 
     @Override

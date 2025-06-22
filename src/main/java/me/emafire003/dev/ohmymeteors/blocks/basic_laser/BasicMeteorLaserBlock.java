@@ -5,6 +5,7 @@ import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import me.emafire003.dev.ohmymeteors.blocks.OMMBlocks;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
+import me.emafire003.dev.particleanimationlib.effects.CuboidEffect;
 import me.emafire003.dev.particleanimationlib.effects.LineEffect;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -16,6 +17,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,12 +63,11 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
     }
 
     /**
-     * Wakes up all of the lasers to check for meteors above them.
+     * Wakes up all the lasers to check for meteors above them.
      * They automatically go back to sleep after {@link #AWAKE_TIME_LIMIT} ticks*/
     public static void awakeLasers(){
         AWAKE = true;
         tickCounter = 0;
-        OhMyMeteors.LOGGER.info("Ok lasers have been awoken");
     }
 
     public static boolean areLasersAwake(){
@@ -78,6 +80,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
      * to see if a meteor has spawned. If it has, it shoots it down.
      */
     private static void tick(World world, BlockPos pos, BlockState state, BasicMeteorLaserBlockEntity blockEntity) {
+
         if(world instanceof ServerWorld serverWorld){
             if(!AWAKE){
                 return;
@@ -94,11 +97,36 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
 
             //useful to see where the box is
-            /*CuboidEffect cuboidEffect = CuboidEffect.builder(serverWorld, ParticleTypes.COMPOSTER, box.getMinPos())
-                    .particles(20).targetPos(box.getMaxPos())
-                    .build();
-            cuboidEffect.setIterations(1);
-            cuboidEffect.run();*/
+
+            //TODO make sure this works with redstone (it does not, need more research)
+            if(world.isEmittingRedstonePower(pos, Direction.DOWN) || true){
+                CuboidEffect cuboidEffect = CuboidEffect.builder(serverWorld, ParticleTypes.BUBBLE_POP, box.getMinPos())
+                        .particles(20).targetPos(box.getMaxPos())
+                        .build();
+                cuboidEffect.setIterations(1);
+                cuboidEffect.run();
+
+
+
+                Vec3d lowerPos = new Vec3d(box.getMaxPos().getX(), pos.getY(), box.getMaxPos().getZ());
+
+                OhMyMeteors.LOGGER.info("the lowerpos: " + lowerPos);
+
+                LineEffect cornerLine = LineEffect
+                        .builder(serverWorld, ParticleTypes.BUBBLE_POP, box.getMaxPos())
+                        .targetPos(lowerPos)
+                        .particles((int) (lowerPos.distanceTo(box.getMaxPos())*2))
+                        .iterations(1)
+                        .build();
+                cornerLine.run();
+
+
+                lowerPos = new Vec3d(box.getMinPos().getX(), pos.getY(), box.getMinPos().getZ());
+                cornerLine.setTargetPos(lowerPos);
+                cornerLine.setOriginPos(box.getMinPos());
+                cornerLine.setParticles((int) (lowerPos.distanceTo(box.getMinPos())*2));
+                cornerLine.run();
+            }
 
             List<MeteorProjectileEntity> meteors = world.getEntitiesByClass(MeteorProjectileEntity.class, box, (meteorProjectileEntity -> true));
             if(meteors == null){
@@ -107,7 +135,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
             meteors.forEach( meteorProjectileEntity -> {
 
-                if(meteorProjectileEntity.getSize() < Config.NATURAL_METEOR_MAX_SIZE/1.5){
+                if(meteorProjectileEntity.getSize() > Config.NATURAL_METEOR_MAX_SIZE/1.5){
                     meteorProjectileEntity.detonateScatter();
                 }else{
                     meteorProjectileEntity.detonateSimple();
@@ -115,8 +143,10 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
 
                 //TODO add a "bzoot" sound effect and maybe custom particles
+                //TODO for the advanced one add 4 lasers in the corners of the block maybe? Or three lasers
+                //TODO later add a proper custom particle effect maybe
                 LineEffect lineEffect = LineEffect
-                        .builder(serverWorld, ParticleTypes.ELECTRIC_SPARK, pos.toCenterPos())
+                        .builder(serverWorld, ParticleTypes.GLOW, pos.toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2))
                         .build();
