@@ -1,6 +1,7 @@
 package me.emafire003.dev.ohmymeteors.blocks.laser;
 
 import com.mojang.serialization.MapCodec;
+import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import me.emafire003.dev.ohmymeteors.blocks.OMMBlocks;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
 import me.emafire003.dev.particleanimationlib.effects.LineEffect;
@@ -58,7 +59,24 @@ public class MeteorLaserBlock extends BlockWithEntity implements BlockEntityProv
     }
 
 
-    private static int tickCounter = 0;
+    /// Only awakens when a meteor is spawned somewhere in the world, to save up on checks
+    private static boolean AWAKE = false;
+    /// Used to determine for how long it should stay actively searching
+    private static int tickCounter = -1;
+    private static final int AWAKE_TIME_LIMIT = 20*25; //Should remain awake for 25 seconds after a meteor has spawned in
+
+    /**
+     * Wakes up all of the lasers to check for meteors above them.
+     * They automatically go back to sleep after {@link #AWAKE_TIME_LIMIT} ticks*/
+    public static void awakeLasers(){
+        AWAKE = true;
+        tickCounter = 0;
+        OhMyMeteors.LOGGER.info("Ok lasers have been awoken");
+    }
+
+    public static boolean areLasersAwake(){
+        return AWAKE;
+    }
 
 
     //TODO add variants cooldown counter etc
@@ -66,14 +84,16 @@ public class MeteorLaserBlock extends BlockWithEntity implements BlockEntityProv
      * to see if a metor has spawned. If it has, it shoots it down.
      */
     private static void tick(World world, BlockPos pos, BlockState state, MeteorLaserBlockEntity blockEntity) {
-        //TODO let's say for now it covers a 32x32 area around where it's place
-        tickCounter++;
-        //TODO ok now this is risky sometimes misses the fastest meteors TODO remove!!!
-        //This way checks only half of the time. Technically super fast meteors could escape but...
-        if(tickCounter%2 == 0){
-            return;
-        }
         if(world instanceof ServerWorld serverWorld){
+            if(!AWAKE){
+                return;
+            }
+            //Makes sure this is awake
+            if(tickCounter > AWAKE_TIME_LIMIT){
+                tickCounter = 0;
+                AWAKE = false;
+                return;
+            }
             //Box box = new Box(new BlockPos(pos.getX(), Config.METEOR_SPAWN_HEIGHT, pos.getZ())).expand(16, 0, 16);
 
             Box box = new Box(new BlockPos(pos.getX(), pos.getY()+Y_LEVEL_AREA_COVERAGE, pos.getZ())).expand(RADIUS_AREA_COVERAGE, 0, RADIUS_AREA_COVERAGE);
@@ -107,6 +127,8 @@ public class MeteorLaserBlock extends BlockWithEntity implements BlockEntityProv
                         .build();
                 lineEffect.runFor(1);
             });
+
+            tickCounter++;
         }
 
     }

@@ -17,6 +17,7 @@ public class Config {
     private static final int ver = 1;
     public static int VERSION;
 
+    //TODO add option for annoucing meteors spawns in chat
 
     public static int NATURAL_METEOR_MIN_SIZE = 1; //as in the ones that spawn from the sky not the ones you can summon
     public static int NATURAL_METEOR_MAX_SIZE = 5;

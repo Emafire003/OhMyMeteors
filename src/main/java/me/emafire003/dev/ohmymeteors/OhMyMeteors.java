@@ -1,6 +1,7 @@
 package me.emafire003.dev.ohmymeteors;
 
 import me.emafire003.dev.ohmymeteors.blocks.OMMBlocks;
+import me.emafire003.dev.ohmymeteors.blocks.events.OMMEvents;
 import me.emafire003.dev.ohmymeteors.commands.OMMCommands;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.ohmymeteors.entities.OMMEntities;
@@ -36,6 +37,7 @@ public class OhMyMeteors implements ModInitializer {
 
 		OMMEntities.registerEntities();
 		OMMBlocks.registerBlocks();
+		OMMEvents.registerEvents();
 
 		//loads the config file on server startup
 		ServerLifecycleEvents.SERVER_STARTED.register( minecraftServer -> {
