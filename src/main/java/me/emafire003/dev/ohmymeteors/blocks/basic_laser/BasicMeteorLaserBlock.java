@@ -109,8 +109,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
      * to see if a meteor has spawned. If it has, it shoots it down.
      */
     private static void tick(World world, BlockPos pos, BlockState state, BasicMeteorLaserBlockEntity blockEntity) {
-
-        if(world instanceof ServerWorld serverWorld){
+        if(world instanceof ServerWorld serverWorld && world.isSkyVisible(pos.up())){
             if(!AWAKE){
                 return;
             }
