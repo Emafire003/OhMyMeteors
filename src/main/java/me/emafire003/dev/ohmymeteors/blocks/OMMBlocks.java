@@ -1,6 +1,8 @@
 package me.emafire003.dev.ohmymeteors.blocks;
 
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
+import me.emafire003.dev.ohmymeteors.blocks.advanced_laser.AdvancedMeteorLaserBlock;
+import me.emafire003.dev.ohmymeteors.blocks.advanced_laser.AdvancedMeteorLaserBlockEntity;
 import me.emafire003.dev.ohmymeteors.blocks.basic_laser.BasicMeteorLaserBlock;
 import me.emafire003.dev.ohmymeteors.blocks.basic_laser.BasicMeteorLaserBlockEntity;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -26,15 +28,28 @@ public class OMMBlocks {
                     .requiresTool()
             ), ItemGroups.REDSTONE, Items.REDSTONE_LAMP);
 
+    public static final BlockEntityType<BasicMeteorLaserBlockEntity> BASIC_METEOR_LASER_BLOCK_ENTITY =
+            register("basic_meteor_laser", BasicMeteorLaserBlockEntity::new, BASIC_METEOR_LASER);
+
+    public static final Block ADVANCED_METEOR_LASER = registerBlock("advanced_meteor_laser",
+            new AdvancedMeteorLaserBlock(AbstractBlock.Settings.create()
+                    .strength(0.6f, 0.5f)
+                    .luminance(value -> 2) //Makes a little bit moreof light
+                    .solid()
+                    .sounds(BlockSoundGroup.COPPER_GRATE)
+                    .requiresTool()
+            ), ItemGroups.REDSTONE, Items.REDSTONE_LAMP);
+
+    public static final BlockEntityType<AdvancedMeteorLaserBlockEntity> ADVANCED_METEOR_LASER_BLOCK_ENTITY =
+            register("advanced_meteor_laser", AdvancedMeteorLaserBlockEntity::new, ADVANCED_METEOR_LASER);
+
+
     private static Block registerBlock(String name, Block block, RegistryKey<ItemGroup> tab, Item add_after) {
         Block the_block = Registry.register(Registries.BLOCK, OhMyMeteors.getIdentifier(name), block);
         Item the_item = Registry.register(Registries.ITEM, OhMyMeteors.getIdentifier(name), new BlockItem(block, new Item.Settings()));
         ItemGroupEvents.modifyEntriesEvent(tab).register(content -> content.addAfter(add_after, the_item));
         return the_block;
     }
-
-    public static final BlockEntityType<BasicMeteorLaserBlockEntity> BASIC_METEOR_LASER_BLOCK_ENTITY =
-            register("basic_meteor_laser", BasicMeteorLaserBlockEntity::new, BASIC_METEOR_LASER);
 
     private static <T extends BlockEntity> BlockEntityType<T> register(
             String name,
