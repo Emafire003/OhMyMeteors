@@ -1,0 +1,20 @@
+{
+  "laser_fire": {
+    "subtitle": "audio.ohmymeteors.laser_fire",
+    "sounds": [
+      "ohmymeteors:laser_fire"
+    ]
+  },
+  "laser_area_on": {
+    "subtitle": "audio.ohmymeteors.laser_area_on",
+    "sounds": [
+      "ohmymeteors:laser_area_on"
+    ]
+  },
+  "laser_area_off": {
+    "subtitle": "audio.ohmymeteors.laser_area_off",
+    "sounds": [
+      "ohmymeteors:laser_area_off"
+    ]
+  }
+}

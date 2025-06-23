@@ -6,6 +6,7 @@ import me.emafire003.dev.ohmymeteors.blocks.OMMBlocks;
 import me.emafire003.dev.ohmymeteors.blocks.OMMProperties;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
+import me.emafire003.dev.ohmymeteors.sounds.OMMSounds;
 import me.emafire003.dev.particleanimationlib.effects.CuboidEffect;
 import me.emafire003.dev.particleanimationlib.effects.LineEffect;
 import net.minecraft.block.*;
@@ -15,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.Text;
@@ -85,11 +87,16 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        //TODO add a little sound effetc thingy and a texture change maybe
+        //TODO add a texture change maybe
         //Note: sneaking won't work since it disables this interaction
         //TODO which item to use?
         if(stack.isOf(Items.IRON_INGOT)){
             BlockState blockState = state.cycle(SHOW_AREA);
+            if(blockState.get(SHOW_AREA)){
+                world.playSound(null, pos, OMMSounds.LASER_AREA_ON, SoundCategory.BLOCKS, 0.7f, 1f);
+            }else{
+                world.playSound(null, pos, OMMSounds.LASER_AREA_OFF, SoundCategory.BLOCKS, 0.7f, 1f);
+            }
             world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
         }
 
@@ -180,8 +187,6 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                     meteorProjectileEntity.detonateSimple();
                 }
 
-
-                //TODO add a "bzoot" sound effect and maybe custom particles
                 //TODO for the advanced one add 4 lasers in the corners of the block maybe? Or three lasers
                 //TODO later add a proper custom particle effect maybe
                 //BUBBLE_POP could also work?
@@ -191,6 +196,10 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2))
                         .build();
                 lineEffect.runFor(1);
+
+                //Plays the "pew" laser firing sound
+                world.playSound(null, pos, OMMSounds.LASER_FIRE, SoundCategory.BLOCKS, 1f, 1.25f);
+
 
                 if(Config.ANNOUNCE_METEOR_DESTROYED){
                     serverWorld.getPlayers().forEach(player -> player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable("message.ohmymeteors.meteor_destroyed").formatted(Formatting.GREEN)), Config.ACTIONBAR_ANNOUNCEMENTS));
