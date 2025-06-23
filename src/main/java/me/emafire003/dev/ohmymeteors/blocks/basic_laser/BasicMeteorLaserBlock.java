@@ -3,21 +3,27 @@ package me.emafire003.dev.ohmymeteors.blocks.basic_laser;
 import com.mojang.serialization.MapCodec;
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import me.emafire003.dev.ohmymeteors.blocks.OMMBlocks;
+import me.emafire003.dev.ohmymeteors.blocks.OMMProperties;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
 import me.emafire003.dev.particleanimationlib.effects.CuboidEffect;
 import me.emafire003.dev.particleanimationlib.effects.LineEffect;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.*;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -27,21 +33,23 @@ import java.util.List;
 //Ah remeber that the whole chunk is loaded when a meteor enters it so this will be loaded as well no need for fancy stuff
 public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntityProvider {
 
+    /// This is used when interacting with the block. With a normal click the checking area will get highlited by particles
+    public static final BooleanProperty SHOW_AREA = OMMProperties.SHOW_AREA;
+
     ///Is able to detect and destroy meteors this many blocks up from its position
-    protected static int Y_LEVEL_AREA_COVERAGE = 64;
-    /// Must wait before firing again for this many seconds
-    protected final int COOLDOWN_TIME = 3;
+    protected static final int Y_LEVEL_AREA_COVERAGE = 64;
     /// The radius in blocks that this type of laser can cover aka how fare on the xz plane it can detect and shoot meteors
-    protected static int RADIUS_AREA_COVERAGE = 48; //Which is around 3x3 chunks
+    protected static final int RADIUS_AREA_COVERAGE = 48; //Which is around 3x3 chunks
 
     /// Only awakens when a meteor is spawned somewhere in the world, to save up on checks
     private static boolean AWAKE = false;
     /// Used to determine for how long it should stay actively searching
-    private static int tickCounter = -1;
+    private static int tickCounterAwakening = -1;
     private static final int AWAKE_TIME_LIMIT = 20*25; //Should remain awake for 25 seconds after a meteor has spawned in
 
     public BasicMeteorLaserBlock(Settings settings) {
         super(settings);
+        this.setDefaultState(this.stateManager.getDefaultState().with(SHOW_AREA, false));
     }
 
     @Override
@@ -67,11 +75,25 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
      * They automatically go back to sleep after {@link #AWAKE_TIME_LIMIT} ticks*/
     public static void awakeLasers(){
         AWAKE = true;
-        tickCounter = 0;
+        tickCounterAwakening = 0;
     }
 
     public static boolean areLasersAwake(){
         return AWAKE;
+    }
+
+
+    @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        //TODO add a little sound effetc thingy and a texture change maybe
+        //Note: sneaking won't work since it disables this interaction
+        //TODO which item to use?
+        if(stack.isOf(Items.IRON_INGOT)){
+            BlockState blockState = state.cycle(SHOW_AREA);
+            world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+        }
+
+        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
 
@@ -86,46 +108,63 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                 return;
             }
             //Makes sure this is awake
-            if(tickCounter > AWAKE_TIME_LIMIT){
-                tickCounter = 0;
+            if(tickCounterAwakening > AWAKE_TIME_LIMIT){
+                tickCounterAwakening = 0;
                 AWAKE = false;
                 return;
             }
             //Box box = new Box(new BlockPos(pos.getX(), Config.METEOR_SPAWN_HEIGHT, pos.getZ())).expand(16, 0, 16);
 
-            Box box = new Box(new BlockPos(pos.getX(), pos.getY()+Y_LEVEL_AREA_COVERAGE, pos.getZ())).expand(RADIUS_AREA_COVERAGE, 0, RADIUS_AREA_COVERAGE);
+            Box box = new Box(new BlockPos(pos.getX(), pos.getY()+Y_LEVEL_AREA_COVERAGE, pos.getZ())).expand(RADIUS_AREA_COVERAGE, 1, RADIUS_AREA_COVERAGE);
 
 
-            //useful to see where the box is
-
-            //TODO make sure this works with redstone (it does not, need more research)
-            if(world.isEmittingRedstonePower(pos, Direction.DOWN) || true){
+            //useful to see where the box is, gets shown when the the show area blockstate property is true
+            if(state.get(SHOW_AREA)){
                 CuboidEffect cuboidEffect = CuboidEffect.builder(serverWorld, ParticleTypes.BUBBLE_POP, box.getMinPos())
-                        .particles(20).targetPos(box.getMaxPos())
+                        .particles(30).targetPos(box.getMaxPos()).iterations(1)
                         .build();
-                cuboidEffect.setIterations(1);
                 cuboidEffect.run();
-
 
 
                 Vec3d lowerPos = new Vec3d(box.getMaxPos().getX(), pos.getY(), box.getMaxPos().getZ());
 
-                OhMyMeteors.LOGGER.info("the lowerpos: " + lowerPos);
-
-                LineEffect cornerLine = LineEffect
+                //The two vertical lines at the angles
+                LineEffect line = LineEffect
                         .builder(serverWorld, ParticleTypes.BUBBLE_POP, box.getMaxPos())
                         .targetPos(lowerPos)
-                        .particles((int) (lowerPos.distanceTo(box.getMaxPos())*2))
+                        .particles((int) (lowerPos.distanceTo(box.getMaxPos())))
                         .iterations(1)
                         .build();
-                cornerLine.run();
-
+                line.run();
 
                 lowerPos = new Vec3d(box.getMinPos().getX(), pos.getY(), box.getMinPos().getZ());
-                cornerLine.setTargetPos(lowerPos);
-                cornerLine.setOriginPos(box.getMinPos());
-                cornerLine.setParticles((int) (lowerPos.distanceTo(box.getMinPos())*2));
-                cornerLine.run();
+                line.setTargetPos(lowerPos);
+                line.setOriginPos(box.getMinPos());
+                line.setParticles((int) (lowerPos.distanceTo(box.getMinPos())));
+                line.run();
+
+                //The vertical line in the middle
+
+                lowerPos = new Vec3d(box.getCenter().getX(), pos.getY(), box.getCenter().getZ());
+                line.setTargetPos(lowerPos);
+                line.setOriginPos(box.getCenter());
+                line.setParticles((int) (lowerPos.distanceTo(box.getCenter())));
+                line.run();
+
+                //The horizontal lines at the top which point to the corner of the box
+                lowerPos = box.getMaxPos();
+                line.setTargetPos(lowerPos);
+                line.setOriginPos(box.getCenter());
+                line.setParticles((int) (lowerPos.distanceTo(box.getCenter())));
+                line.run();
+
+                lowerPos = box.getMinPos();
+                line.setTargetPos(lowerPos);
+                line.setOriginPos(box.getCenter());
+                line.setParticles((int) (lowerPos.distanceTo(box.getCenter())));
+                line.run();
+
+
             }
 
             List<MeteorProjectileEntity> meteors = world.getEntitiesByClass(MeteorProjectileEntity.class, box, (meteorProjectileEntity -> true));
@@ -145,6 +184,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                 //TODO add a "bzoot" sound effect and maybe custom particles
                 //TODO for the advanced one add 4 lasers in the corners of the block maybe? Or three lasers
                 //TODO later add a proper custom particle effect maybe
+                //BUBBLE_POP could also work?
                 LineEffect lineEffect = LineEffect
                         .builder(serverWorld, ParticleTypes.GLOW, pos.toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
@@ -153,15 +193,19 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                 lineEffect.runFor(1);
 
                 if(Config.ANNOUNCE_METEOR_DESTROYED){
-                    serverWorld.getPlayers().forEach(player -> {
-                        player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable("message.ohmymeteors.meteor_destroyed").formatted(Formatting.GREEN)), Config.ACTIONBAR_ANNOUNCEMENTS);
-                    });
+                    serverWorld.getPlayers().forEach(player -> player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable("message.ohmymeteors.meteor_destroyed").formatted(Formatting.GREEN)), Config.ACTIONBAR_ANNOUNCEMENTS));
                 }
             });
 
-            tickCounter++;
+            tickCounterAwakening++;
         }
 
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+
+        builder.add(SHOW_AREA);
     }
 
 }
