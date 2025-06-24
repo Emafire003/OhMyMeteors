@@ -65,6 +65,12 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
         return new BasicMeteorLaserBlockEntity(pos, state);
     }
 
+    //The opacity doesn't seem to work ingame :( apparently partially transparent blocks are not supported by default..
+    @Override
+    protected BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
