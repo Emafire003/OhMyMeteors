@@ -65,6 +65,11 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
         return new BasicMeteorLaserBlockEntity(pos, state);
     }
 
+    @Override
+    protected BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
