@@ -6,6 +6,8 @@
   "block.ohmymeteors.meteoric_rock": "Meteoric Rock",
 
   "item.ohmymeteors.meteoric_chunk": "Meteoric Chunk",
+  "item.ohmymeteors.focusing_lenses": "Focusing Lenses",
+  "item.ohmymeteors.meteoric_alloy": "Meteoric Alloy",
 
   "message.ohmymeteors.meteor_spawned": "A new meteor has spawned!",
   "message.ohmymeteors.meteor_destroyed": "A meteor has been destroyed!",

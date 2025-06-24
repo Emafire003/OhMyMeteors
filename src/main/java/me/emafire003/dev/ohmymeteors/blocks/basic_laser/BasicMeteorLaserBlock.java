@@ -23,10 +23,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -118,7 +122,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
         if(world instanceof ServerWorld serverWorld && world.isSkyVisible(pos.up())){
 
             //Checks if either the laser is awake or if it needs to show the area. If none of this are true, returns early
-            if(!state.get(SHOW_AREA) || !AWAKE){
+            if(!state.get(SHOW_AREA) && !AWAKE){
                 return;
             }
 
@@ -190,7 +194,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
             meteors.forEach( meteorProjectileEntity -> {
 
-                if(!canDestroyEveryMeteor() || meteorProjectileEntity.getSize() > Config.NATURAL_METEOR_MAX_SIZE/1.5){
+                if(meteorProjectileEntity.getSize() > Config.NATURAL_METEOR_MAX_SIZE/1.5){
                     meteorProjectileEntity.detonateScatter();
                 }else{
                     meteorProjectileEntity.detonateSimple();
@@ -227,14 +231,30 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
         return RADIUS_AREA_COVERAGE;
     }
 
-    protected static boolean canDestroyEveryMeteor(){
-        return false;
-    }
-
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 
         builder.add(SHOW_AREA);
     }
 
+    public VoxelShape makeShape(){
+        VoxelShape shape = VoxelShapes.empty();
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0, 0, 0, 1, 0.625, 1), BooleanBiFunction.OR);
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0.4375, 0.625, 0.4375, 0.5625, 1, 0.5625), BooleanBiFunction.OR);
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0, 0.8125, 0, 1, 0.875, 0.4375), BooleanBiFunction.OR);
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0, 0.625, 0, 0.0625, 0.8125, 0.0625), BooleanBiFunction.OR);
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0.9375, 0.625, 0, 1, 0.8125, 0.0625), BooleanBiFunction.OR);
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0, 0.625, 0.9375, 0.0625, 0.8125, 1), BooleanBiFunction.OR);
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0.9375, 0.625, 0.9375, 1, 0.8125, 1), BooleanBiFunction.OR);
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0, 0.8125, 0.4375, 0.4375, 0.875, 0.5625), BooleanBiFunction.OR);
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0, 0.8125, 0.5625, 1, 0.875, 1), BooleanBiFunction.OR);
+        shape = VoxelShapes.combine(shape, VoxelShapes.cuboid(0.5625, 0.8125, 0.4375, 1, 0.875, 0.5625), BooleanBiFunction.OR);
+
+        return shape;
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return makeShape();
+    }
 }

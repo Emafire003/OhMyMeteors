@@ -18,4 +18,5 @@ public class OhMyMeteorsClient implements ClientModInitializer {
         EntityRendererRegistry.register(OMMEntities.METEOR_PROJECTILE_ENTITY, MeteorProjectileEntityRenderer::new);
         BlockRenderLayerMap.INSTANCE.putBlock(OMMBlocks.BASIC_METEOR_LASER, RenderLayer.getTranslucent());
     }
+
 }
