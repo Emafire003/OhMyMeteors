@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "ohmymeteors:meteoric_rock",
+    "ohmymeteors:basic_meteor_laser",
+    "ohmymeteors:advanced_meteor_laser"
+  ]
+}
+

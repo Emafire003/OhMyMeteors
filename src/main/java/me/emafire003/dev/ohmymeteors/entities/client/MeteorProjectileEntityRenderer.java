@@ -1,5 +1,6 @@
 package me.emafire003.dev.ohmymeteors.entities.client;
 
+import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
@@ -67,6 +68,6 @@ public class MeteorProjectileEntityRenderer extends EntityRenderer<MeteorProject
     @Override
     public Identifier getTexture(MeteorProjectileEntity entity) {
         //TODO update
-        return Identifier.ofVanilla("textures/block/smooth_basalt.png");
+        return OhMyMeteors.getIdentifier("textures/block/meteoric_rock.png");
     }
 }

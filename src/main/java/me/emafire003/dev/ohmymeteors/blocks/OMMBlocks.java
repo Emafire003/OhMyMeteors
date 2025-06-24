@@ -11,7 +11,11 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.*;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -21,7 +25,7 @@ public class OMMBlocks {
 
     public static final Block BASIC_METEOR_LASER = registerBlock("basic_meteor_laser",
             new BasicMeteorLaserBlock(AbstractBlock.Settings.create()
-                    .strength(0.5f, 0.5f)
+                    .strength(1.9f)
                     .luminance(value -> 1) //Makes a little bit of light
                     .solid()
                     .sounds(BlockSoundGroup.COPPER_GRATE)
@@ -33,12 +37,18 @@ public class OMMBlocks {
 
     public static final Block ADVANCED_METEOR_LASER = registerBlock("advanced_meteor_laser",
             new AdvancedMeteorLaserBlock(AbstractBlock.Settings.create()
-                    .strength(0.6f, 0.5f)
+                    .strength(2f)
                     .luminance(value -> 2) //Makes a little bit moreof light
                     .solid()
                     .sounds(BlockSoundGroup.COPPER_GRATE)
                     .requiresTool()
             ), ItemGroups.REDSTONE, Items.REDSTONE_LAMP);
+
+    public static final Block METEORIC_ROCK = registerBlock("meteoric_rock",
+            new MeteoricRockBlock(AbstractBlock.Settings.create().requiresTool().strength(4F).solid()),
+            //new Block(AbstractBlock.Settings.copy(Blocks.DEEPSLATE_IRON_ORE)),
+            ItemGroups.NATURAL, Items.SMOOTH_BASALT);
+
 
     public static final BlockEntityType<AdvancedMeteorLaserBlockEntity> ADVANCED_METEOR_LASER_BLOCK_ENTITY =
             register("advanced_meteor_laser", AdvancedMeteorLaserBlockEntity::new, ADVANCED_METEOR_LASER);
