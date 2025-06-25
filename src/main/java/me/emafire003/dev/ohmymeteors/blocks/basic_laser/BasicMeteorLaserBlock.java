@@ -41,6 +41,9 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
     /// This is used when interacting with the block. With a normal click the checking area will get highlited by particles
     public static final BooleanProperty SHOW_AREA = OMMProperties.SHOW_AREA;
+    /// Used to dispaly the "firing" texture of the laser model. Is true when it has just shot down a meteor
+
+    public static final BooleanProperty FIRING = OMMProperties.FIRING;
 /*
     ///Is able to detect and destroy meteors this many blocks up from its position
     protected static final int Y_LEVEL_AREA_COVERAGE = 64;
@@ -56,7 +59,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
     public BasicMeteorLaserBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(SHOW_AREA, false));
+        this.setDefaultState(this.stateManager.getDefaultState().with(SHOW_AREA, false).with(FIRING, false));
     }
 
     @Override
@@ -135,7 +138,6 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                         .build();
                 cuboidEffect.run();
 
-
                 Vec3d lowerPos = new Vec3d(box.getMaxPos().getX(), pos.getY(), box.getMaxPos().getZ());
 
                 //The two vertical lines at the angles
@@ -188,9 +190,12 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
             }
 
             List<MeteorProjectileEntity> meteors = world.getEntitiesByClass(MeteorProjectileEntity.class, box, (meteorProjectileEntity -> true));
-            if(meteors == null){
+            if(meteors == null || meteors.isEmpty()){
                 return;
             }
+            //From here it means there is at least one meteor, so activate the laser with the firing texture and stuff
+            BlockState blockState = state.with(FIRING, true);
+            world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 
             meteors.forEach( meteorProjectileEntity -> {
 
@@ -201,13 +206,21 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                 }
 
                 //TODO later add a proper custom particle effect maybe
+                //TODO also add a smaller version of the flash particle
                 //BUBBLE_POP could also work?
                 LineEffect lineEffect = LineEffect
                         .builder(serverWorld, ParticleTypes.GLOW, pos.toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2))
                         .build();
-                lineEffect.runFor(1);
+                lineEffect.runFor(1, (effect, t) -> {
+                    //If the ticks are 19 it means the effect is about to end (1 second = 20 ticks), so revert back the state
+                    if(t >= 19){
+                        BlockState blockState1 = state.with(FIRING, false);
+                        world.setBlockState(pos, blockState1, Block.NOTIFY_LISTENERS);
+                    }
+                });
+
 
                 //Plays the "pew" laser firing sound
                 world.playSound(null, pos, OMMSounds.LASER_FIRE, SoundCategory.BLOCKS, 1f, 1.25f);
@@ -234,7 +247,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 
-        builder.add(SHOW_AREA);
+        builder.add(SHOW_AREA, FIRING);
     }
 
     public VoxelShape makeShape(){

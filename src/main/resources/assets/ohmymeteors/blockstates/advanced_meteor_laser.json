@@ -1,7 +1,16 @@
 {
   "variants": {
-    "": {
+    "show_area=true,firing=false": {
       "model": "ohmymeteors:block/advanced_meteor_laser"
+    },
+    "show_area=false,firing=false": {
+      "model": "ohmymeteors:block/advanced_meteor_laser"
+    },
+    "show_area=true,firing=true": {
+      "model": "ohmymeteors:block/advanced_laser_firing"
+    },
+    "show_area=false,firing=true": {
+      "model": "ohmymeteors:block/advanced_laser_firing"
     }
   }
 }

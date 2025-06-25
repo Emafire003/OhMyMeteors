@@ -9,6 +9,7 @@ import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
 import me.emafire003.dev.ohmymeteors.sounds.OMMSounds;
 import me.emafire003.dev.particleanimationlib.effects.CuboidEffect;
 import me.emafire003.dev.particleanimationlib.effects.LineEffect;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -47,7 +48,7 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
 
     public AdvancedMeteorLaserBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(SHOW_AREA, false));
+        this.setDefaultState(this.stateManager.getDefaultState().with(SHOW_AREA, false).with(FIRING, false));
     }
 
     @Override
@@ -160,15 +161,18 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
             }
 
             List<MeteorProjectileEntity> meteors = world.getEntitiesByClass(MeteorProjectileEntity.class, box, (meteorProjectileEntity -> true));
-            if(meteors == null){
+            if(meteors == null || meteors.isEmpty()){
                 return;
             }
+
+            //From here it means there is at least one meteor, so activate the laser with the firing texture and stuff
+            BlockState blockState = state.with(FIRING, true);
+            world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 
             meteors.forEach( meteorProjectileEntity -> {
 
                 meteorProjectileEntity.detonateSimple();
 
-                //TODO for the advanced one add 4 lasers in the corners of the block maybe? Or three lasers
                 //TODO later add a proper custom particle effect maybe
                 //BUBBLE_POP could also work?
                 LineEffect lineEffect = LineEffect
@@ -176,7 +180,15 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
                         .targetPos(meteorProjectileEntity.getPos())
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2))
                         .build();
-                lineEffect.runFor(1);
+                lineEffect.runFor(1, (effect, t) -> {
+                    //If the ticks are 19/20 it means the effect is about to end (1 second = 20 ticks), so revert back the state
+                    if(t >= 19){
+                        BlockState blockState1 = state.with(FIRING, false);
+                        world.setBlockState(pos, blockState1, Block.NOTIFY_LISTENERS);
+                        OhMyMeteors.LOGGER.info("Resetting to: " + world.getBlockState(pos));
+                    }
+                    OhMyMeteors.LOGGER.info("The tick is: " + t);
+                });
 
                 lineEffect.setParticle(ParticleTypes.DOLPHIN);
                 lineEffect.setOriginPos(pos.up().toCenterPos().add(0.5, -0.5, 0));

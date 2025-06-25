@@ -3,8 +3,8 @@
 	"credit": "Made with Blockbench by SlayerTheChikken, Emafire003",
 	"texture_size": [64, 64],
 	"textures": {
-		"2": "ohmymeteors:block/advanced_meteor_laser",
-		"particle": "ohmymeteors:block/advanced_meteor_laser"
+		"2": "ohmymeteors:block/advanced_laser_firing",
+		"particle": "ohmymeteors:block/advanced_laser_firing"
 	},
 	"elements": [
 		{
