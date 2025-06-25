@@ -30,11 +30,15 @@ import java.util.List;
 //Ah remeber that the whole chunk is loaded when a meteor enters it so this will be loaded as well no need for fancy stuff
 public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
 
-    ///Is able to detect and destroy meteors this many blocks up from its position
+    //TODO add a cooldown without using properties or stuff, just like which ticks in the getTicker. Maybe. needs testing
+    //protected int cooldown;
+
+
+/*    ///Is able to detect and destroy meteors this many blocks up from its position
     protected static final int Y_LEVEL_AREA_COVERAGE = 64;
     /// The radius in blocks that this type of laser can cover aka how fare on the xz plane it can detect and shoot meteors
     protected static final int RADIUS_AREA_COVERAGE = 80; //Which is around 5x5 chunks
-
+*/
     /// Only awakens when a meteor is spawned somewhere in the world, to save up on checks
     private static boolean AWAKE = false;
     /// Used to determine for how long it should stay actively searching
@@ -74,6 +78,13 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
         return AWAKE;
     }
 
+    protected static int getYLevelAreaCoverage(){
+        return Config.ADVANCED_LASER_AREA_RADIUS;
+    }
+
+    protected static int getRadiusAreaCoverage(){
+        return Config.ADVANCED_LASER_HEIGHT;
+    }
 
     //TODO add variants cooldown counter etc
     /** This is the main logic of the block. Will check every tick the space around the y level where meteors spawn
@@ -86,7 +97,7 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
                 return;
             }
 
-            Box box = new Box(new BlockPos(pos.getX(), Math.min(pos.getY()+Y_LEVEL_AREA_COVERAGE, Config.METEOR_SPAWN_HEIGHT), pos.getZ())).expand(RADIUS_AREA_COVERAGE, 1, RADIUS_AREA_COVERAGE);
+            Box box = new Box(new BlockPos(pos.getX(), Math.min(pos.getY()+getYLevelAreaCoverage(), Config.METEOR_SPAWN_HEIGHT), pos.getZ())).expand(getRadiusAreaCoverage(), 1, getRadiusAreaCoverage());
 
 
             //useful to see where the box is, gets shown when the the show area blockstate property is true
@@ -161,23 +172,27 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
                 //TODO later add a proper custom particle effect maybe
                 //BUBBLE_POP could also work?
                 LineEffect lineEffect = LineEffect
-                        .builder(serverWorld, ParticleTypes.GLOW, pos.toCenterPos())
+                        .builder(serverWorld, ParticleTypes.GLOW, pos.up().toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2))
                         .build();
                 lineEffect.runFor(1);
 
-                lineEffect.setParticle(ParticleTypes.END_ROD);
-                lineEffect.setOriginPos(pos.toCenterPos().add(0.5, -0.5, 0));
+                lineEffect.setParticle(ParticleTypes.DOLPHIN);
+                lineEffect.setOriginPos(pos.up().toCenterPos().add(0.5, -0.5, 0));
+                lineEffect.setParticles((int) (pos.up().toCenterPos().add(0.5, -0.5, 0).distanceTo(meteorProjectileEntity.getPos())*2));
                 lineEffect.runFor(1);
 
-                lineEffect.setOriginPos(pos.toCenterPos().add(-0.5, -0.5, 0));
+                lineEffect.setOriginPos(pos.up().toCenterPos().add(-0.5, -0.5, 0));
+                lineEffect.setParticles((int) (pos.up().toCenterPos().add(-0.5, -0.5, 0).distanceTo(meteorProjectileEntity.getPos())*2));
                 lineEffect.runFor(1);
 
-                lineEffect.setOriginPos(pos.toCenterPos().add(0, -0.5, 0.5));
+                lineEffect.setOriginPos(pos.up().toCenterPos().add(0, -0.5, 0.5));
+                lineEffect.setParticles((int) (pos.up().toCenterPos().add(0, -0.5, 0.5).distanceTo(meteorProjectileEntity.getPos())*2));
                 lineEffect.runFor(1);
 
-                lineEffect.setOriginPos(pos.toCenterPos().add(0, -0.5, -0.5));
+                lineEffect.setOriginPos(pos.up().toCenterPos().add(0, -0.5, -0.5));
+                lineEffect.setParticles((int) (pos.up().toCenterPos().add(0, -0.5, -0.5).distanceTo(meteorProjectileEntity.getPos())*2));
                 lineEffect.runFor(1);
 
                 //Plays the "pew" laser firing sound

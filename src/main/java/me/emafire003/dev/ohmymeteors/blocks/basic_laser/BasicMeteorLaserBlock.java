@@ -6,6 +6,7 @@ import me.emafire003.dev.ohmymeteors.blocks.OMMBlocks;
 import me.emafire003.dev.ohmymeteors.blocks.OMMProperties;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
+import me.emafire003.dev.ohmymeteors.items.OMMItems;
 import me.emafire003.dev.ohmymeteors.sounds.OMMSounds;
 import me.emafire003.dev.particleanimationlib.effects.CuboidEffect;
 import me.emafire003.dev.particleanimationlib.effects.LineEffect;
@@ -13,7 +14,6 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -41,12 +41,12 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
     /// This is used when interacting with the block. With a normal click the checking area will get highlited by particles
     public static final BooleanProperty SHOW_AREA = OMMProperties.SHOW_AREA;
-
+/*
     ///Is able to detect and destroy meteors this many blocks up from its position
     protected static final int Y_LEVEL_AREA_COVERAGE = 64;
     /// The radius in blocks that this type of laser can cover aka how fare on the xz plane it can detect and shoot meteors
     protected static final int RADIUS_AREA_COVERAGE = 48; //Which is around 3x3 chunks
-
+*/
     /// Only awakens when a meteor is spawned somewhere in the world, to save up on checks
     //TODO migrate this to a property maybe
     private static boolean AWAKE = false;
@@ -100,7 +100,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
         //TODO add a texture change maybe
         //Note: sneaking won't work since it disables this interaction
         //TODO which item to use?
-        if(stack.isOf(Items.IRON_INGOT)){
+        if(stack.isOf(OMMItems.FOCUSING_LENSES)){
             BlockState blockState = state.cycle(SHOW_AREA);
             if(blockState.get(SHOW_AREA)){
                 world.playSound(null, pos, OMMSounds.LASER_AREA_ON, SoundCategory.BLOCKS, 0.7f, 1f);
@@ -224,11 +224,11 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
     }
 
     protected static int getYLevelAreaCoverage(){
-        return Y_LEVEL_AREA_COVERAGE;
+        return Config.BASIC_LASER_AREA_RADIUS;
     }
 
     protected static int getRadiusAreaCoverage(){
-        return RADIUS_AREA_COVERAGE;
+        return Config.BASIC_LASER_HEIGHT;
     }
 
     @Override

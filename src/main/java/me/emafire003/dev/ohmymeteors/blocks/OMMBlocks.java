@@ -27,8 +27,7 @@ public class OMMBlocks {
             new BasicMeteorLaserBlock(AbstractBlock.Settings.create()
                     .strength(1.9f)
                     .luminance(value -> 1) //Makes a little bit of light
-                    .solid()
-                    .sounds(BlockSoundGroup.COPPER_GRATE)
+                    .sounds(BlockSoundGroup.COPPER)
                     .requiresTool()
             ), ItemGroups.REDSTONE, Items.REDSTONE_LAMP);
 
@@ -39,19 +38,18 @@ public class OMMBlocks {
             new AdvancedMeteorLaserBlock(AbstractBlock.Settings.create()
                     .strength(2f)
                     .luminance(value -> 2) //Makes a little bit moreof light
-                    .solid()
-                    .sounds(BlockSoundGroup.COPPER_GRATE)
+                    .sounds(BlockSoundGroup.COPPER)
                     .requiresTool()
             ), ItemGroups.REDSTONE, Items.REDSTONE_LAMP);
+
+    public static final BlockEntityType<AdvancedMeteorLaserBlockEntity> ADVANCED_METEOR_LASER_BLOCK_ENTITY =
+            register("advanced_meteor_laser", AdvancedMeteorLaserBlockEntity::new, ADVANCED_METEOR_LASER);
+
 
     public static final Block METEORIC_ROCK = registerBlock("meteoric_rock",
             new MeteoricRockBlock(AbstractBlock.Settings.create().requiresTool().strength(4F).solid()),
             //new Block(AbstractBlock.Settings.copy(Blocks.DEEPSLATE_IRON_ORE)),
             ItemGroups.NATURAL, Items.SMOOTH_BASALT);
-
-
-    public static final BlockEntityType<AdvancedMeteorLaserBlockEntity> ADVANCED_METEOR_LASER_BLOCK_ENTITY =
-            register("advanced_meteor_laser", AdvancedMeteorLaserBlockEntity::new, ADVANCED_METEOR_LASER);
 
 
     private static Block registerBlock(String name, Block block, RegistryKey<ItemGroup> tab, Item add_after) {

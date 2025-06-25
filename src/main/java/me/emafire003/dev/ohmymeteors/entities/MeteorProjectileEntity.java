@@ -5,8 +5,6 @@ import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import me.emafire003.dev.ohmymeteors.events.MeteorSpawnEvent;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.particleanimationlib.effects.AnimatedCircleEffect;
-import me.emafire003.dev.particleanimationlib.effects.VortexEffect;
-import me.emafire003.dev.particleanimationlib.effects.base.YPREffect;
 import me.emafire003.dev.structureplacerapi.StructurePlacerAPI;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -18,7 +16,6 @@ import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ChunkTicketType;
@@ -33,7 +30,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,7 +153,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         if(this.getWorld() instanceof ServerWorld world){
             if(loadingChuckTicks > 0){
                 if(currentlyLoadedChunk == null || !currentlyLoadedChunk.equals(this.getChunkPos())){
-                    world.getChunkManager().addTicket(METEOR_CHUCK_TICKET,  this.getChunkPos(), 1, this.getBlockPos());
+                    world.getChunkManager().addTicket(METEOR_CHUCK_TICKET,  this.getChunkPos(), 2, this.getBlockPos());
                     currentlyLoadedChunk = this.getChunkPos();
                     loadingChuckTicks = 5*20;
                 }
@@ -165,7 +161,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                 return;
             }
 
-            world.getChunkManager().addTicket(METEOR_CHUCK_TICKET,  this.getChunkPos(), 1, this.getBlockPos());
+            world.getChunkManager().addTicket(METEOR_CHUCK_TICKET,  this.getChunkPos(), 2, this.getBlockPos());
             currentlyLoadedChunk = this.getChunkPos();
             loadingChuckTicks = 5*20;
         }
