@@ -291,17 +291,17 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
             }
 
             StructurePlacerAPI placer =
-                    new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, -2, 0));;
+                    new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, new BlockPos(0, -2, 0));
             //between 2 and 5 (inclusive) the meteor is considered small
             //TODO migrate this to config
             if(this.getSize() < 5){
                 int r = this.getRandom().nextBetween(1,3);
                 if(r == 1){
-                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, -2, 0));
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, new BlockPos(0, -2, 0));
                 }else if(r==2){
-                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_1"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, -2, 0));
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_1"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, new BlockPos(0, -2, 0));
                 }else{
-                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_2"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, -2, 0));
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_2"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, new BlockPos(0, -2, 0));
                 }
 
                 placer.loadStructure();
@@ -311,26 +311,26 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
             if(this.getSize() >= 5){
                 BlockPos m_pos = new BlockPos(-2, -3, -3);
                 int r = this.getRandom().nextBetween(1,9);
-                //TODO make sure this works properly
+                
                 if(r == 9){
-                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_99"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, m_pos);
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_99"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos);
                     placer.loadStructure();
                     return;
                 }
                 r = this.getRandom().nextBetween(1,3);
                 if(r == 1){
-                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, m_pos);
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos);
                 }else if(r==2){
-                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_1"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, m_pos);
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_1"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos);
                 }else{
-                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_2"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, m_pos);
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_2"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos);
                 }
 
                 placer.loadStructure();
             }
 
             //TODO read the filenames of the files of the /structure/ folder thing and check the folders that have like small medium big ecc
-            /*StructurePlacerAPI placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("proto_meteor"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, 0, 0));
+            /*StructurePlacerAPI placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("proto_meteor"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, new BlockPos(0, 0, 0));
             placer.loadStructure();*/
 
         }
