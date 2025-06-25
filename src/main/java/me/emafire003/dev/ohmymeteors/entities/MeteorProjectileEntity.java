@@ -2,6 +2,7 @@ package me.emafire003.dev.ohmymeteors.entities;
 
 import com.google.common.annotations.VisibleForTesting;
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
+import me.emafire003.dev.ohmymeteors.blocks.OMMBlocks;
 import me.emafire003.dev.ohmymeteors.events.MeteorSpawnEvent;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.particleanimationlib.effects.AnimatedCircleEffect;
@@ -275,9 +276,63 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     public void detonateWithStructure(){
         detonateSimple();
         if(!this.getWorld().isClient()){
+
+            //If the dimension is even lower than 2, just spawn one block
+            if(this.getSize() < 2){
+                int r = this.getRandom().nextBetween(1,3);
+                if(r == 1){
+                    this.getWorld().setBlockState(BlockPos.ofFloored(this.getPos()), OMMBlocks.METEORIC_ROCK.getDefaultState());
+                }else if(r == 2){
+                    this.getWorld().setBlockState(BlockPos.ofFloored(this.getPos()), Blocks.SMOOTH_BASALT.getDefaultState());
+                }else{
+                    this.getWorld().setBlockState(BlockPos.ofFloored(this.getPos()), Blocks.BLACKSTONE.getDefaultState());
+                }
+                return;
+            }
+
+            StructurePlacerAPI placer =
+                    new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, -2, 0));;
+            //between 2 and 5 (inclusive) the meteor is considered small
+            //TODO migrate this to config
+            if(this.getSize() < 5){
+                int r = this.getRandom().nextBetween(1,3);
+                if(r == 1){
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, -2, 0));
+                }else if(r==2){
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_1"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, -2, 0));
+                }else{
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_2"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, -2, 0));
+                }
+
+                placer.loadStructure();
+                return;
+            }
+            //TODO make a range including big meteors and stuff. Also add more medium meteors
+            if(this.getSize() >= 5){
+                BlockPos m_pos = new BlockPos(-2, -3, -3);
+                int r = this.getRandom().nextBetween(1,9);
+                //TODO make sure this works properly
+                if(r == 9){
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_99"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, m_pos);
+                    placer.loadStructure();
+                    return;
+                }
+                r = this.getRandom().nextBetween(1,3);
+                if(r == 1){
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, m_pos);
+                }else if(r==2){
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_1"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, m_pos);
+                }else{
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_2"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, m_pos);
+                }
+
+                placer.loadStructure();
+            }
+
             //TODO read the filenames of the files of the /structure/ folder thing and check the folders that have like small medium big ecc
-            StructurePlacerAPI placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("proto_meteor"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, 0, 0));
-            placer.loadStructure();
+            /*StructurePlacerAPI placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("proto_meteor"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, true, 1f, new BlockPos(0, 0, 0));
+            placer.loadStructure();*/
+
         }
     }
     
