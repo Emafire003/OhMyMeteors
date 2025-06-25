@@ -80,11 +80,11 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
     }
 
     protected static int getYLevelAreaCoverage(){
-        return Config.ADVANCED_LASER_AREA_RADIUS;
+        return Config.ADVANCED_LASER_HEIGHT;
     }
 
     protected static int getRadiusAreaCoverage(){
-        return Config.ADVANCED_LASER_HEIGHT;
+        return Config.ADVANCED_LASER_AREA_RADIUS;
     }
 
     //TODO add variants cooldown counter etc
