@@ -54,6 +54,12 @@ public class Config {
     public static int ADVANCED_LASER_AREA_RADIUS = 48;
     public static int ADVANCED_LASER_HEIGHT = 64;
     
+    public static boolean SHOULD_BASIC_LASER_COOLDOWN = true;
+    public static int BASIC_LASER_COOLDOWN = 3; //seconds
+    public static boolean SHOULD_ADVANCED_LASER_COOLDOWN = true;
+    public static int ADVANCED_LASER_COOLDOWN = 1; //seconds
+
+
 
     public static void handleVersionChange(){
         int version_found = CONFIG.getOrDefault("version", ver);
@@ -155,6 +161,12 @@ public class Config {
         configs.addKeyValuePair(new Pair<>("advanced_laser_area_radius", 48),"The radius in blocks of the xz area covered by the advanced laser block, where meteors will be blown up");
         configs.addKeyValuePair(new Pair<>("advanced_laser_height", 64),"How many blocks up from the position of the advanced laser should meteors be checked for? (note that the detection box is only 2 blocks thick, not the whole way)");
 
+        configs.addKeyValuePair(new Pair<>("should_basic_laser_cooldown", true),"Should the laser be in a cooldown where it can't fire, after it has just fired?");
+        configs.addKeyValuePair(new Pair<>("basic_laser_cooldown", 3),"How many seconds should this cooldown last?");
+
+        configs.addKeyValuePair(new Pair<>("should_advanced_laser_cooldown", true),"Should the laser be in a cooldown where it can't fire, after it has just fired?");
+        configs.addKeyValuePair(new Pair<>("advanced_laser_cooldown", 1),"How many seconds should this cooldown last?");
+
     }
 
     public static void reloadConfig(){
@@ -198,6 +210,13 @@ public class Config {
 
         ADVANCED_LASER_AREA_RADIUS = CONFIG.getOrDefault("advanced_laser_area_radius", 48);
         ADVANCED_LASER_HEIGHT = CONFIG.getOrDefault("advanced_laser_height", 64);
+        
+        SHOULD_BASIC_LASER_COOLDOWN = CONFIG.getOrDefault("should_basic_laser_cooldown", true);
+        BASIC_LASER_COOLDOWN = CONFIG.getOrDefault("basic_laser_cooldown", 3);
+
+        SHOULD_ADVANCED_LASER_COOLDOWN = CONFIG.getOrDefault("should_advanced_laser_cooldown", true);
+        ADVANCED_LASER_COOLDOWN = CONFIG.getOrDefault("advanced_laser_cooldown", 3);
+
     }
 }
 

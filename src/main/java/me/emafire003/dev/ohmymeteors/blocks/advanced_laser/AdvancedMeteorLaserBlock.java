@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 //Ah remeber that the whole chunk is loaded when a meteor enters it so this will be loaded as well no need for fancy stuff
 public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
@@ -47,7 +48,7 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
 
     public AdvancedMeteorLaserBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(SHOW_AREA, false).with(FIRING, false));
+        this.setDefaultState(this.stateManager.getDefaultState().with(SHOW_AREA, false).with(IN_COOLDOWN, false).with(FIRING, false));
     }
 
     @Override
@@ -86,6 +87,20 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
         return Config.ADVANCED_LASER_AREA_RADIUS;
     }
 
+    /// Yes it's very hacky, but only a small amount of blocks are going to be in cooldown at the same time, if any.
+    /// In this case a block is identified by its blockentity, which is unique unlike its blockstate
+    private static final ConcurrentHashMap<BlockEntity, Integer> BLOCKS_IN_COOLDOWN = new ConcurrentHashMap<>();
+
+    /**Puts a laser block in cooldown for some time*/
+    public static void putInCooldown(BlockEntity entity){
+        BLOCKS_IN_COOLDOWN.put(entity, 0);
+    }
+
+    public static void removeCooldown(BlockEntity entity, BlockState state, World world, BlockPos pos){
+        BLOCKS_IN_COOLDOWN.remove(entity);
+        world.setBlockState(pos, state.with(IN_COOLDOWN, false));
+    }
+
     //TODO add variants cooldown counter etc
     /** This is the main logic of the block. Will check every tick the space around the y level where meteors spawn
      * to see if a meteor has spawned. If it has, it shoots it down.
@@ -93,6 +108,18 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
     private static void tick(World world, BlockPos pos, BlockState state, AdvancedMeteorLaserBlockEntity blockEntity) {
         if(world instanceof ServerWorld serverWorld && world.isSkyVisible(pos.up())){
 
+
+            if(Config.SHOULD_ADVANCED_LASER_COOLDOWN && BLOCKS_IN_COOLDOWN.containsKey(blockEntity)){
+                //The cooldown is ended, keep on with the rest
+                if(BLOCKS_IN_COOLDOWN.get(blockEntity) > Config.ADVANCED_LASER_COOLDOWN*20){
+                    removeCooldown(blockEntity, state, world, pos);
+
+                }else{//Increases the cooldown timer
+                    BLOCKS_IN_COOLDOWN.put(blockEntity, BLOCKS_IN_COOLDOWN.getOrDefault(blockEntity, 0)+1);
+                    return;
+                }
+            }
+            
             if(!state.get(SHOW_AREA) && !AWAKE){
                 return;
             }
@@ -182,11 +209,9 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
                 lineEffect.runFor(1, (effect, t) -> {
                     //If the ticks are 19/20 it means the effect is about to end (1 second = 20 ticks), so revert back the state
                     if(t >= 19){
-                        BlockState blockState1 = state.with(FIRING, false);
-                        world.setBlockState(pos, blockState1, Block.NOTIFY_LISTENERS);
-                        OhMyMeteors.LOGGER.info("Resetting to: " + world.getBlockState(pos));
+                        world.setBlockState(pos, state.with(FIRING, false).with(IN_COOLDOWN, true), Block.NOTIFY_LISTENERS);
+                        putInCooldown(blockEntity);
                     }
-                    OhMyMeteors.LOGGER.info("The tick is: " + t);
                 });
 
                 lineEffect.setParticle(ParticleTypes.DOLPHIN);
