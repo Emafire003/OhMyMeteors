@@ -49,9 +49,9 @@ public class Config {
     public static boolean METEOR_STRUCTURE = true;
     public static boolean SCATTER_METEOR_STRUCTURE = true;
 
-    public static int BASIC_LASER_AREA_RADIUS = 48;
+    public static int BASIC_LASER_AREA_RADIUS = 32;
     public static int BASIC_LASER_HEIGHT = 64;
-    public static int ADVANCED_LASER_AREA_RADIUS = 80;
+    public static int ADVANCED_LASER_AREA_RADIUS = 48;
     public static int ADVANCED_LASER_HEIGHT = 64;
     
 
@@ -149,10 +149,10 @@ public class Config {
 
         configs.addKeyValuePair(new Pair<>("spacer", "spacer"), "");
 
-        configs.addKeyValuePair(new Pair<>("basic_laser_area_radius", 48),"The radius in blocks of the xz area covered by the Basic laser block, where meteors will be blown up");
+        configs.addKeyValuePair(new Pair<>("basic_laser_area_radius", 32),"The radius in blocks of the xz area covered by the Basic laser block, where meteors will be blown up");
         configs.addKeyValuePair(new Pair<>("basic_laser_height", 64),"How many blocks up from the position of the basic laser should meteors be checked for? (note that the detection box is only 2 blocks thick, not the whole way)");
 
-        configs.addKeyValuePair(new Pair<>("advanced_laser_area_radius", 80),"The radius in blocks of the xz area covered by the advanced laser block, where meteors will be blown up");
+        configs.addKeyValuePair(new Pair<>("advanced_laser_area_radius", 48),"The radius in blocks of the xz area covered by the advanced laser block, where meteors will be blown up");
         configs.addKeyValuePair(new Pair<>("advanced_laser_height", 64),"How many blocks up from the position of the advanced laser should meteors be checked for? (note that the detection box is only 2 blocks thick, not the whole way)");
 
     }
@@ -193,10 +193,10 @@ public class Config {
         METEOR_STRUCTURE = CONFIG.getOrDefault("meteor_structure", true);
         SCATTER_METEOR_STRUCTURE = CONFIG.getOrDefault("scatter_meteor_structure", true);
         
-        BASIC_LASER_AREA_RADIUS = CONFIG.getOrDefault("basic_laser_area_radius", 48);
+        BASIC_LASER_AREA_RADIUS = CONFIG.getOrDefault("basic_laser_area_radius", 32);
         BASIC_LASER_HEIGHT = CONFIG.getOrDefault("basic_laser_height", 64);
 
-        ADVANCED_LASER_AREA_RADIUS = CONFIG.getOrDefault("advanced_laser_area_radius", 80);
+        ADVANCED_LASER_AREA_RADIUS = CONFIG.getOrDefault("advanced_laser_area_radius", 48);
         ADVANCED_LASER_HEIGHT = CONFIG.getOrDefault("advanced_laser_height", 64);
     }
 }

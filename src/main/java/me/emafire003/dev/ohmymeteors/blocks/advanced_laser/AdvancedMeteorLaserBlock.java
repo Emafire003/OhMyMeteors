@@ -34,7 +34,6 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
     //TODO add a cooldown without using properties or stuff, just like which ticks in the getTicker. Maybe. needs testing
     //protected int cooldown;
 
-
 /*    ///Is able to detect and destroy meteors this many blocks up from its position
     protected static final int Y_LEVEL_AREA_COVERAGE = 64;
     /// The radius in blocks that this type of laser can cover aka how fare on the xz plane it can detect and shoot meteors
