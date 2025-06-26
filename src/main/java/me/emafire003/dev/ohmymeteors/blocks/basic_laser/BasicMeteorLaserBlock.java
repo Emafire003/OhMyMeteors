@@ -7,6 +7,7 @@ import me.emafire003.dev.ohmymeteors.blocks.OMMProperties;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
 import me.emafire003.dev.ohmymeteors.items.OMMItems;
+import me.emafire003.dev.ohmymeteors.particles.OMMParticles;
 import me.emafire003.dev.ohmymeteors.sounds.OMMSounds;
 import me.emafire003.dev.particleanimationlib.effects.CuboidEffect;
 import me.emafire003.dev.particleanimationlib.effects.LineEffect;
@@ -233,10 +234,11 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                 //TODO later add a proper custom particle effect maybe
                 //TODO also add a smaller version of the flash particle
                 //BUBBLE_POP could also work?
+                //TODO for some reason this seems to trigger like twice or more
                 LineEffect lineEffect = LineEffect
-                        .builder(serverWorld, ParticleTypes.GLOW, pos.toCenterPos())
+                        .builder(serverWorld, OMMParticles.LASER_PARTICLE, pos.toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
-                        .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2))
+                        .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*3))
                         .build();
                 lineEffect.runFor(1, (effect, t) -> {
                     //If the ticks are 19 it means the effect is about to end (1 second = 20 ticks), so revert back the state

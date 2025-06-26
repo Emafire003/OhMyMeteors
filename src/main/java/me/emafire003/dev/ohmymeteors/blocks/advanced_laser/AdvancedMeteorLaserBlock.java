@@ -6,6 +6,7 @@ import me.emafire003.dev.ohmymeteors.blocks.OMMBlocks;
 import me.emafire003.dev.ohmymeteors.blocks.basic_laser.BasicMeteorLaserBlock;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
+import me.emafire003.dev.ohmymeteors.particles.OMMParticles;
 import me.emafire003.dev.ohmymeteors.sounds.OMMSounds;
 import me.emafire003.dev.particleanimationlib.effects.CuboidEffect;
 import me.emafire003.dev.particleanimationlib.effects.LineEffect;
@@ -202,7 +203,7 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
                 //TODO later add a proper custom particle effect maybe
                 //BUBBLE_POP could also work?
                 LineEffect lineEffect = LineEffect
-                        .builder(serverWorld, ParticleTypes.GLOW, pos.up().toCenterPos())
+                        .builder(serverWorld, OMMParticles.LASER_PARTICLE, pos.up().toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2))
                         .build();

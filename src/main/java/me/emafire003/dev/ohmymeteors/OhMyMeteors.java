@@ -7,6 +7,7 @@ import me.emafire003.dev.ohmymeteors.commands.OMMCommands;
 import me.emafire003.dev.ohmymeteors.config.Config;
 import me.emafire003.dev.ohmymeteors.entities.OMMEntities;
 import me.emafire003.dev.ohmymeteors.items.OMMItems;
+import me.emafire003.dev.ohmymeteors.particles.OMMParticles;
 import me.emafire003.dev.ohmymeteors.sounds.OMMSounds;
 import net.fabricmc.api.ModInitializer;
 
@@ -46,6 +47,7 @@ public class OhMyMeteors implements ModInitializer {
 		OMMEvents.registerEvents();
 		OMMSounds.registerSounds();
 		OMMItems.registerItems();
+		OMMParticles.registerParticles();
 
 		//loads the config file on server startup
 		ServerLifecycleEvents.SERVER_STARTED.register( minecraftServer -> {
