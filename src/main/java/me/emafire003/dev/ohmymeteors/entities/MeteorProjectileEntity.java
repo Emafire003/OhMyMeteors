@@ -312,7 +312,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
             }
             //TODO make a range including big meteors and stuff. Also add more medium meteors
             if(this.getSize() < 7){
-                m_pos_offset = new BlockPos(-5, -7, -3);
+                m_pos_offset = new BlockPos(-2, -3, -3);
 
                 int r = this.getRandom().nextBetween(1,19);
                 
@@ -333,7 +333,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                 placer.loadStructure();
             }
             if(this.getSize() >= 7){
-                m_pos_offset = new BlockPos(-2, -3, -3);
+                m_pos_offset = new BlockPos(-4, -6, -3);
 
                 int r = this.getRandom().nextBetween(1,10);
 
