@@ -311,8 +311,8 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                 return;
             }
             //TODO make a range including big meteors and stuff. Also add more medium meteors
-            if(this.getSize() >= 5){
-                m_pos_offset = new BlockPos(-2, -3, -3);
+            if(this.getSize() < 7){
+                m_pos_offset = new BlockPos(-5, -7, -3);
 
                 int r = this.getRandom().nextBetween(1,19);
                 
@@ -328,6 +328,28 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                     placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_1"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
                 }else{
                     placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_2"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+                }
+
+                placer.loadStructure();
+            }
+            if(this.getSize() >= 7){
+                m_pos_offset = new BlockPos(-2, -3, -3);
+
+                int r = this.getRandom().nextBetween(1,10);
+
+                if(r == 9){
+                    //TODO put the one with the cat
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_99"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+                    placer.loadStructure();
+                    return;
+                }
+                r = this.getRandom().nextBetween(1,3);
+                if(r == 1){
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("big/big_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+                }else if(r==2){
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("big/big_meteor_1"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+                }else{
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("big/big_meteor_2"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
                 }
 
                 placer.loadStructure();
