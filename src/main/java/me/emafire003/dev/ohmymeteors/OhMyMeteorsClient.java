@@ -2,6 +2,7 @@ package me.emafire003.dev.ohmymeteors;
 
 import me.emafire003.dev.ohmymeteors.blocks.OMMBlocks;
 import me.emafire003.dev.ohmymeteors.entities.OMMEntities;
+import me.emafire003.dev.ohmymeteors.entities.client.MeteorCatEntityRenderer;
 import me.emafire003.dev.ohmymeteors.entities.client.MeteorProjectileEntityModel;
 import me.emafire003.dev.ohmymeteors.entities.client.MeteorProjectileEntityRenderer;
 import me.emafire003.dev.ohmymeteors.particles.LaserParticle;
@@ -17,15 +18,27 @@ public class OhMyMeteorsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 
-        EntityModelLayerRegistry.registerModelLayer(MeteorProjectileEntityModel.METEOR, MeteorProjectileEntityModel::getTexturedModelData);
-        EntityRendererRegistry.register(OMMEntities.METEOR_PROJECTILE_ENTITY, MeteorProjectileEntityRenderer::new);
-        BlockRenderLayerMap.INSTANCE.putBlock(OMMBlocks.BASIC_METEOR_LASER, RenderLayer.getTranslucent());
-        BlockRenderLayerMap.INSTANCE.putBlock(OMMBlocks.ADVANCED_METEOR_LASER, RenderLayer.getTranslucent());
+        registerEntityStuff();
+        registerBlockStuff();
         registerParticles();
     }
 
     public void registerParticles(){
         ParticleFactoryRegistry.getInstance().register(OMMParticles.LASER_PARTICLE, LaserParticle.EggCrackFactory::new);
+    }
+
+    public static void registerEntityStuff(){
+        EntityModelLayerRegistry.registerModelLayer(MeteorProjectileEntityModel.METEOR, MeteorProjectileEntityModel::getTexturedModelData);
+        EntityRendererRegistry.register(OMMEntities.METEOR_PROJECTILE_ENTITY, MeteorProjectileEntityRenderer::new);
+        //TODO this may be needed
+        //EntityModelLayerRegistry.registerModelLayer(MeteorCatEntityModel., MeteorProjectileEntityModel::getTexturedModelData);
+        EntityRendererRegistry.register(OMMEntities.METEOR_KITTY_CAT, MeteorCatEntityRenderer::new);
+
+    }
+
+    public static void registerBlockStuff(){
+        BlockRenderLayerMap.INSTANCE.putBlock(OMMBlocks.BASIC_METEOR_LASER, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(OMMBlocks.ADVANCED_METEOR_LASER, RenderLayer.getTranslucent());
     }
 
 }
