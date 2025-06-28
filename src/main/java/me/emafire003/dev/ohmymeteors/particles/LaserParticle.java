@@ -16,7 +16,7 @@ public class LaserParticle extends SpriteBillboardParticle {
         this.green = j;
         this.blue = j;
         this.setBoundingBoxSpacing(0.02F, 0.02F);
-        this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.5F);
+        this.scale = this.scale * (this.random.nextFloat() * 0.5F + 0.5F);
         this.velocityX *= 0.02F;
         this.velocityY *= 0.02F;
         this.velocityZ *= 0.02F;

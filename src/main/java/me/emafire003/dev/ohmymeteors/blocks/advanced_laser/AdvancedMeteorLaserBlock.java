@@ -200,22 +200,16 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
 
                 meteorProjectileEntity.detonateSimple();
 
-                //TODO later add a proper custom particle effect maybe
+                serverWorld.spawnParticles(OMMParticles.LASER_FLASH_PARTICLE, pos.up().up().getX(), pos.up().up().getY(), pos.up().up().getZ(), 2, 0.01, 0.01, 0.01, 0.1);
+
                 //BUBBLE_POP could also work?
                 LineEffect lineEffect = LineEffect
                         .builder(serverWorld, OMMParticles.LASER_PARTICLE, pos.up().toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2))
                         .build();
-                lineEffect.runFor(1, (effect, t) -> {
-                    //If the ticks are 19/20 it means the effect is about to end (1 second = 20 ticks), so revert back the state
-                    if(t >= 19){
-                        world.setBlockState(pos, state.with(FIRING, false).with(IN_COOLDOWN, true), Block.NOTIFY_LISTENERS);
-                        putInCooldown(blockEntity);
-                    }
-                });
 
-                lineEffect.setParticle(ParticleTypes.DOLPHIN);
+                lineEffect.setParticle(OMMParticles.LASER_PARTICLE_SMALL);
                 lineEffect.setOriginPos(pos.up().toCenterPos().add(0.5, -0.5, 0));
                 lineEffect.setParticles((int) (pos.up().toCenterPos().add(0.5, -0.5, 0).distanceTo(meteorProjectileEntity.getPos())*2));
                 lineEffect.runFor(1);
@@ -231,6 +225,18 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
                 lineEffect.setOriginPos(pos.up().toCenterPos().add(0, -0.5, -0.5));
                 lineEffect.setParticles((int) (pos.up().toCenterPos().add(0, -0.5, -0.5).distanceTo(meteorProjectileEntity.getPos())*2));
                 lineEffect.runFor(1);
+
+                lineEffect.setParticle(OMMParticles.LASER_PARTICLE);
+                lineEffect.setOriginPos(pos.up().toCenterPos());
+                lineEffect.setTargetPos(meteorProjectileEntity.getPos());
+                lineEffect.setParticles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2));
+                lineEffect.runFor(1, (effect, t) -> {
+                    //If the ticks are 19/20 it means the effect is about to end (1 second = 20 ticks), so revert back the state
+                    if(t >= 19){
+                        world.setBlockState(pos, state.with(FIRING, false).with(IN_COOLDOWN, true), Block.NOTIFY_LISTENERS);
+                        putInCooldown(blockEntity);
+                    }
+                });
 
                 //Plays the "pew" laser firing sound
                 world.playSound(null, pos, OMMSounds.LASER_FIRE, SoundCategory.BLOCKS, 1f, 1.4f);

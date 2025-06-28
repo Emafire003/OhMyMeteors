@@ -231,10 +231,8 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                     meteorProjectileEntity.detonateSimple();
                 }
 
-                //TODO later add a proper custom particle effect maybe
-                //TODO also add a smaller version of the flash particle
-                //BUBBLE_POP could also work?
-                //TODO for some reason this seems to trigger like twice or more
+                serverWorld.spawnParticles(OMMParticles.LASER_FLASH_PARTICLE, pos.up().up().getX(), pos.up().up().getY(), pos.up().up().getZ(), 2, 0.01, 0.01, 0.01, 0.1);
+
                 LineEffect lineEffect = LineEffect
                         .builder(serverWorld, OMMParticles.LASER_PARTICLE, pos.toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
