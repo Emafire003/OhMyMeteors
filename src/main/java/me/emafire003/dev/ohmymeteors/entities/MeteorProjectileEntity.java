@@ -297,7 +297,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                     new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
             //between 2 and 5 (inclusive) the meteor is considered small
             //TODO migrate this to config
-            if(this.getSize() < 5){
+            if(this.getSize() <= Config.MAX_SMALL_METEOR_SIZE){
                 int r = this.getRandom().nextBetween(1,3);
                 if(r == 1){
                     placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
@@ -311,7 +311,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                 return;
             }
             //TODO make a range including big meteors and stuff. Also add more medium meteors
-            if(this.getSize() < 7){
+            if(this.getSize() <= Config.MAX_MEDIUM_METEOR_SIZE){
                 m_pos_offset = new BlockPos(-2, -3, -3);
 
                 int r = this.getRandom().nextBetween(1,19);
@@ -332,6 +332,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
                 placer.loadStructure();
             }
+            //TODO add the other sizes
             if(this.getSize() >= 7){
                 m_pos_offset = new BlockPos(-4, -6, -3);
 

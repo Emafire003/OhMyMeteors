@@ -18,7 +18,7 @@ public class Config {
     public static int VERSION;
 
     public static int NATURAL_METEOR_MIN_SIZE = 1; //as in the ones that spawn from the sky not the ones you can summon
-    public static int NATURAL_METEOR_MAX_SIZE = 7;
+    public static int NATURAL_METEOR_MAX_SIZE = 10;
 
     public static int MIN_METEOR_SPAWN_DISTANCE = 2; //As in a radius of blocks around the player in which the meteor won't spawn in (but remember that it can have an angled trajectory)
     public static int MAX_METEOR_SPAWN_DISTANCE = 30; //TODO probably increase it back to 50?
@@ -58,6 +58,10 @@ public class Config {
     public static int BASIC_LASER_COOLDOWN = 3; //seconds
     public static boolean SHOULD_ADVANCED_LASER_COOLDOWN = true;
     public static int ADVANCED_LASER_COOLDOWN = 1; //seconds
+    
+    public static int MAX_SMALL_METEOR_SIZE = 4;
+    public static int MAX_MEDIUM_METEOR_SIZE = 7;
+    public static int MAX_BIG_METEOR_SIZE = 20;
 
 
 
@@ -130,7 +134,7 @@ public class Config {
         configs.addKeyValuePair(new Pair<>("meteor_night_spawn_chance", 10000),"The chance for a meteor to spawn at night if enabled. Expressed as in 1 in x chances.");
 
         configs.addKeyValuePair(new Pair<>("natural_meteor_min_size", 1),"The smallest size a natural meteor can have when spawned in. Cannot go below 1");
-        configs.addKeyValuePair(new Pair<>("natural_meteor_max_size", 5),"The biggest size a natural meteor can have when spawned in. Cannot go above 50.");
+        configs.addKeyValuePair(new Pair<>("natural_meteor_max_size", 10),"The biggest size a natural meteor can have when spawned in. Cannot go above 50.");
 
         configs.addKeyValuePair(new Pair<>("spacer", "spacer"), "");
 
@@ -167,6 +171,13 @@ public class Config {
         configs.addKeyValuePair(new Pair<>("should_advanced_laser_cooldown", true),"Should the laser be in a cooldown where it can't fire, after it has just fired?");
         configs.addKeyValuePair(new Pair<>("advanced_laser_cooldown", 1),"How many seconds should this cooldown last?");
 
+        configs.addKeyValuePair(new Pair<>("spacer", "spacer"), "");
+        
+        configs.addKeyValuePair(new Pair<>("max_small_meteor_size", 4),"The maximum size of meteor that can be considered small, and will spawn a small meteor structure upon impact");
+        configs.addKeyValuePair(new Pair<>("max_medium_meteor_size", 7),"The maximum size of meteor that can be considered medium, and will spawn a medium meteor structure upon impact");
+        configs.addKeyValuePair(new Pair<>("max_big_meteor_size", 7),"The maximum size of meteor that can be considered big, and will spawn a big meteor structure upon impact. Only these can spawn a meteor cat by default.");
+
+
     }
 
     public static void reloadConfig(){
@@ -187,7 +198,7 @@ public class Config {
         MODIFY_SPAWN_CHANCE_AT_NIGHT = CONFIG.getOrDefault("modify_spawn_chance_at_night", false);
         METEOR_NIGHT_SPAWN_CHANCE = CONFIG.getOrDefault("meteor_night_spawn_chance", 10000);
         NATURAL_METEOR_MIN_SIZE = CONFIG.getOrDefault("natural_meteor_min_size", 1);
-        NATURAL_METEOR_MAX_SIZE = CONFIG.getOrDefault("natural_meteor_max_size", 5);
+        NATURAL_METEOR_MAX_SIZE = CONFIG.getOrDefault("natural_meteor_max_size", 10);
 
         SHOULD_BYPASS_LEAVES = CONFIG.getOrDefault("should_bypass_leaves", true);
         HOMING_METEORS = CONFIG.getOrDefault("homing_meteors", false);
@@ -216,6 +227,10 @@ public class Config {
 
         SHOULD_ADVANCED_LASER_COOLDOWN = CONFIG.getOrDefault("should_advanced_laser_cooldown", true);
         ADVANCED_LASER_COOLDOWN = CONFIG.getOrDefault("advanced_laser_cooldown", 3);
+
+        MAX_SMALL_METEOR_SIZE = CONFIG.getOrDefault("max_small_meteor_size", 4);
+        MAX_MEDIUM_METEOR_SIZE = CONFIG.getOrDefault("max_medium_meteor_size", 7);
+        MAX_BIG_METEOR_SIZE = CONFIG.getOrDefault("max_big_meteor_size", 20);
 
     }
 }
