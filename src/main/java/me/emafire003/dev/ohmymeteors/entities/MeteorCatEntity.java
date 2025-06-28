@@ -1,29 +1,24 @@
 package me.emafire003.dev.ohmymeteors.entities;
 
-import net.minecraft.entity.EntityData;
+import me.emafire003.dev.ohmymeteors.OhMyMeteors;
+import me.emafire003.dev.ohmymeteors.mixin.CatCollarInvoker;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.entity.passive.CatVariant;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Util;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class MeteorCatEntity extends CatEntity {
-
-    private static final TrackedData<String> TYPE_VARIANT =
-            DataTracker.registerData(MeteorCatEntity.class, TrackedDataHandlerRegistry.STRING);
 
     public MeteorCatEntity(EntityType<? extends CatEntity> entityType, World world) {
         super(entityType, world);
@@ -51,45 +46,54 @@ public class MeteorCatEntity extends CatEntity {
         return super.damage(source, amount);
     }
 
-    /// Variant stuff
-
-    /* VARIANT */
+    //Compat stuff aka removing variants and such.
+    // The idea is, always return the same texture but keep the tracked data there in order not to cause too many issues.
+    // The only other way would be copying over the methods of the cat to a new Entity without extending the cat
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        //TODO mixin into cat class to remove the other line about variants
-        builder.add(TYPE_VARIANT, "meteor");
+    public Identifier getTexture() {
+        return OhMyMeteors.getIdentifier("textures/entity/meteor_cat.png");
+    }
+
+    /*@Override
+    public RegistryEntry<CatVariant> getVariant() {
+        return null;
+    }
+*/
+    @Override
+    public void setVariant(RegistryEntry<CatVariant> registryEntry) {
+
+    }
+
+    //TODO if to breed with cats, just needs to remove the "meteor" part
+    //also should not need overriding
+    @Nullable
+    public MeteorCatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        MeteorCatEntity catEntity = OMMEntities.METEOR_KITTY_CAT.create(serverWorld);
+        //EntityType.CAT.create(serverWorld);
+        if (catEntity != null && passiveEntity instanceof MeteorCatEntity catEntity2) {
+
+
+            if (this.isTamed()) {
+                catEntity.setOwnerUuid(this.getOwnerUuid());
+                catEntity.setTamed(true, true);
+                if (this.random.nextBoolean()) {
+                    ((CatCollarInvoker) catEntity).invokeSetCollarColor(this.getCollarColor());
+                } else {
+                    ((CatCollarInvoker) catEntity).invokeSetCollarColor(this.getCollarColor());
+                }
+            }
+        }
+
+        return catEntity;
     }
 
     @Override
-    public MeteorCatVariant getVariant() {
-        return MeteorCatVariant.byId(getTypeVariant());
+    public boolean canBreedWith(AnimalEntity other) {
+        if (!this.isTamed()) {
+            return false;
+        } else {
+            return other instanceof MeteorCatEntity catEntity && catEntity.isTamed() && super.canBreedWith(other);
+        }
     }
 
-    private String getTypeVariant() {
-        return this.dataTracker.get(TYPE_VARIANT);
-    }
-
-    private void setVariant(MeteorCatVariant variant) {
-        this.dataTracker.set(TYPE_VARIANT, variant.getId());
-    }
-
-    @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putString("Variant", this.getTypeVariant());
-    }
-
-    @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.dataTracker.set(TYPE_VARIANT, nbt.getString("Variant"));
-    }
-
-    @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
-                                 @Nullable EntityData entityData) {
-        setVariant(MeteorCatVariant.DEFAULT);
-        return super.initialize(world, difficulty, spawnReason, entityData);
-    }
 }
