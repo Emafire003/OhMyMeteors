@@ -333,7 +333,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                 placer.loadStructure();
             }
             //TODO add the other sizes
-            if(this.getSize() >= 7){
+            if(this.getSize() <= Config.MAX_BIG_METEOR_SIZE){
                 m_pos_offset = new BlockPos(-4, -6, -3);
 
                 int r = this.getRandom().nextBetween(1,10);
@@ -355,7 +355,26 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                 placer.loadStructure();
             }
 
+            //If it's not in the sizes above, then it's a huge one:
+            //TODO properly add the huge ones
+            m_pos_offset = new BlockPos(-4, -8, -3);
+
+            int r = this.getRandom().nextBetween(1,3);
+
+            if(r == 1){
+                placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("huge/huge_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+            }else if(r==2){
+                placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("huge/huge_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+            }else{
+                placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("huge/huge_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+            }
+
+            placer.loadStructure();
+
+
+
             //TODO read the filenames of the files of the /structure/ folder thing and check the folders that have like small medium big ecc
+            // maybe in a future update
             /*StructurePlacerAPI placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("proto_meteor"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, new BlockPos(0, 0, 0));
             placer.loadStructure();*/
 
