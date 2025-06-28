@@ -338,8 +338,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                 int r = this.getRandom().nextBetween(1,10);
 
                 if(r == 9){
-                    //TODO put the one with the cat
-                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_99"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+                    placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("big/big_meteor_cat"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
                     placer.loadStructure();
                     return;
                 }
