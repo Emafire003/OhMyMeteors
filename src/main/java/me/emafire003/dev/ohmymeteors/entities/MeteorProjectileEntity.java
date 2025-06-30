@@ -237,8 +237,8 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         circle.setIterations(10);
         circle.run();
     }
-    
-    
+
+
     /** Makes this entity explode without creating any structures on impact
      * and then discards this entity*/
     public void detonateSimple(){
@@ -270,7 +270,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         //entity.getWorld().addParticle(ParticleTypes.FLASH, pos.getX(), pos.getY(), pos.getZ(), 0,0,0);
         this.discard();
     }
-    
+
     /** Like {@link #detonateSimple()} but will also spawn the structure of the meteor*/
     public void detonateWithStructure(){
         detonateSimple();
@@ -314,7 +314,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                 m_pos_offset = new BlockPos(-2, -3, -3);
 
                 int r = this.getRandom().nextBetween(1,19);
-                
+
                 if(r == 9){
                     placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("medium/medium_meteor_99"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
                     placer.loadStructure();
@@ -379,10 +379,10 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
         }
     }
-    
+
     /**This will detonate the meteor with an explosion like {@link #detonateSimple()}
-     * but will also spawn other meteors based on the size of this meteor. 
-     * 
+     * but will also spawn other meteors based on the size of this meteor.
+     *
      * Meteors will be smaller and be oriented randomly from that point on, but will still go down.
      * */
     public void detonateScatter(){

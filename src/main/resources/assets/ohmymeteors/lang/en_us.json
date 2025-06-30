@@ -15,6 +15,6 @@
   "message.ohmymeteors.meteor_destroyed.huge": "A HUGE meteor has been destroyed!",
 
   "audio.ohmymeteors.laser_fire": "Meteor Laser fired!",
-  "audio.ohmymeteors.laser_area_on": "Show laser target area!",
+  "audio.ohmymeteors.laser_area_on": "Showing laser target area!",
   "audio.ohmymeteors.laser_area_off": "Stop showing laser target area!"
 }
