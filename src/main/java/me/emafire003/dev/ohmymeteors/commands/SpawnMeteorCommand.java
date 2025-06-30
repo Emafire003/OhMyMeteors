@@ -13,6 +13,36 @@ import net.minecraft.text.Text;
 
 public class SpawnMeteorCommand implements OMMCommand {
 
+    private int spawnRandom(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+
+        try{
+
+            if(!source.isExecutedByPlayer()){
+                source.sendMessage(Text.literal("Must be executed by player"));
+                return 0;
+            }
+
+            MeteorProjectileEntity meteorProjectile = new MeteorProjectileEntity(source.getWorld());
+            meteorProjectile.setPos(
+                    source.getPlayer().getX()+source.getPlayer().getRandom().nextBetween(0, 50)*source.getPlayer().getRandom().nextBetween(-1, 1), 
+                    source.getPlayer().getEyeY()+source.getPlayer().getRandom().nextBetween(0, 50)*source.getPlayer().getRandom().nextBetween(-1, 1), 
+                    source.getPlayer().getZ()+source.getPlayer().getRandom().nextBetween(0, 50)*source.getPlayer().getRandom().nextBetween(-1, 1)
+            );
+
+            source.sendMessage(Text.literal("Spawning meteor at " + meteorProjectile.getPos()));
+
+            meteorProjectile.setSize(source.getPlayer().getRandom().nextBetween(0, 20));
+            source.getWorld().spawnEntity(meteorProjectile);
+
+            return 1;
+        }catch(Exception e){
+            e.printStackTrace();
+            source.sendFeedback( () -> Text.literal("Error: " + e),false);
+            return 0;
+        }
+    }
+
     private int spawnSize(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
 
@@ -51,7 +81,7 @@ public class SpawnMeteorCommand implements OMMCommand {
             MeteorProjectileEntity meteorProjectile = new MeteorProjectileEntity(source.getWorld());
             meteorProjectile.setPos(source.getPlayer().getX(), source.getPlayer().getEyeY(), source.getPlayer().getZ());
 
-            meteorProjectile.setVelocity(source.getPlayer(), source.getPlayer().getPitch(), source.getPlayer().getYaw(), 0f, FloatArgumentType.getFloat(context, "speed"), 0f);
+            //meteorProjectile.setVelocity(source.getPlayer(), source.getPlayer().getPitch(), source.getPlayer().getYaw(), 0f, FloatArgumentType.getFloat(context, "speed"), 0f);
             //TODO for some reason this gets ignored?
             meteorProjectile.setSize(IntegerArgumentType.getInteger(context, "size"));
             source.getWorld().spawnEntity(meteorProjectile);
@@ -69,11 +99,16 @@ public class SpawnMeteorCommand implements OMMCommand {
         return CommandManager
                 .literal("spawn")
                 .then(
+                        CommandManager.literal("random")
+                                .executes(this::spawnRandom)
+                )
+                .then(
                         CommandManager.argument("size", IntegerArgumentType.integer(0, 50))
                                 .then(
                                         CommandManager.argument("speed", FloatArgumentType.floatArg(0, 10))
                                                 .executes(this::spawnSpeed)
-                                ).executes(this::spawnSize)
+                                )
+                                .executes(this::spawnSize)
                 )
                 .build();
     }

@@ -403,7 +403,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         for(int i = 0; i<scatter_into; i++){
             //Gets a random number between 1 and the remaining size, making sure to leave at least one size for each new meteor yet to generate)
             int size =  this.getRandom().nextBetween(1, Math.max(remainingSize-(scatter_into-i), 1));
-            MeteorProjectileEntity m = getDownwardsMeteor(this.getPos(), (ServerWorld) this.getWorld(), 1, 10+this.getSize() /2, this.getPos().getY(), size, size);
+            MeteorProjectileEntity m = getDownwardsMeteor(this.getPos(), (ServerWorld) this.getWorld(), 1, 10+this.getSize() /2, this.getPos().getY(), size, size, false);
             m.setScatterMeteor(true);
             newMeteors.add(m);
         }
@@ -455,7 +455,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     /**
      * Gets a meteor object to be spawned in, with a velocity oriented dowards and a spawn position already set up
      * */
-    public static MeteorProjectileEntity getDownwardsMeteor(Vec3d originPos, ServerWorld world, int min_spawn_d, int max_spawn_d, double spawn_height, int min_size, int max_size){
+    public static MeteorProjectileEntity getDownwardsMeteor(Vec3d originPos, ServerWorld world, int min_spawn_d, int max_spawn_d, double spawn_height, int min_size, int max_size, boolean homing){
         MeteorProjectileEntity meteor = new MeteorProjectileEntity(world);
 
         //The invert is to also have a chance at having negative coordinates, otherwise they would always be positive
@@ -487,6 +487,11 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         meteor.setSize(world.getRandom().nextBetween(Math.max(0, min_size), Math.min(50, max_size)));
 
         meteor.setVelocity((world.getRandom().nextFloat()/2)*invert_x, -1.0f+world.getRandom().nextFloat(), (world.getRandom().nextFloat()/2)*invert_y);
+
+        if(homing){
+            //TODO maybe just go with 1,1,1 as velocity multiplier
+            meteor.setVelocity(originPos.subtract(meteor.getPos()).normalize().multiply(meteor.getVelocity().getX(), meteor.getVelocity().getY()*-1, meteor.getVelocity().getZ()));
+        }
 
         return meteor;
     }

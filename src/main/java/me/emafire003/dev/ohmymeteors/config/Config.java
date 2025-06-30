@@ -39,8 +39,7 @@ public class Config {
     public static boolean SHOULD_COOLDOWN_BETWEEN_METEORS = true;
     public static int MIN_METEOR_COOLDOWN_TIME = 20; //In seconds
 
-    //TODO this is VERY WIP and only works if the player is rather far down from where the meteor spawns in. Like i might delete this instead
-    //public static boolean HOMING_METEORS = false; //These would not spawn with a random direction but aim towards a selected player
+    public static boolean HOMING_METEORS = false; //These would not spawn with a random direction but aim towards a selected player
 
     public static boolean ANNOUNCE_METEOR_SPAWN = false;
     public static boolean ANNOUNCE_METEOR_DESTROYED = false;
@@ -148,7 +147,7 @@ public class Config {
         configs.addKeyValuePair(new Pair<>("spacer", "spacer"), "");
 
         configs.addKeyValuePair(new Pair<>("should_bypass_leaves", true),"Should meteors bypass leaves blocks instead of colliding with them midair?");
-        //configs.addKeyValuePair(new Pair<>("homing_meteors", false),"Should meteors be (more or less) directed towards the nearest player?");
+        configs.addKeyValuePair(new Pair<>("homing_meteors", false),"Should meteors be (more or less) directed towards the nearest player?");
 
         configs.addKeyValuePair(new Pair<>("announce_meteor_spawn", false),"Should players get a message in chat/hotbar when a meteor spawns?");
         configs.addKeyValuePair(new Pair<>("announce_meteor_destroyed", false),"Should players get a message in chat/hotbar when a meteor is destroyed?");
@@ -214,7 +213,7 @@ public class Config {
         NATURAL_METEOR_MAX_SIZE = CONFIG.getOrDefault("natural_meteor_max_size", 10);
 
         SHOULD_BYPASS_LEAVES = CONFIG.getOrDefault("should_bypass_leaves", true);
-        //HOMING_METEORS = CONFIG.getOrDefault("homing_meteors", false);
+        HOMING_METEORS = CONFIG.getOrDefault("homing_meteors", false);
 
         SHOULD_COOLDOWN_BETWEEN_METEORS = CONFIG.getOrDefault("should_cooldown_between_meteors", true);
         MIN_METEOR_COOLDOWN_TIME = CONFIG.getOrDefault("min_meteor_cooldown_time", 20);
