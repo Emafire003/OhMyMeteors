@@ -29,6 +29,9 @@ public class Config {
 
     //TODO how should this work? A percentage? A fraction? For now i think i'm gonna go with 1 on the number here.
     public static int METEOR_SPAWN_CHANCE = 20000;
+    public static boolean SPAWN_HUGE_METEORS = true;
+    public static int HUGE_METEOR_CHANCE = 100;
+    public static int HUGE_METEOR_SIZE_LIMIT = 35;
 
     public static boolean MODIFY_SPAWN_CHANCE_AT_NIGHT = false;
     public static int METEOR_NIGHT_SPAWN_CHANCE = 10000;
@@ -131,6 +134,12 @@ public class Config {
         configs.addKeyValuePair(new Pair<>("meteor_spawn_height", 300), "The world height (y level) at which meteors spawn in");
         configs.addKeyValuePair(new Pair<>("meteor_spawn_chance", 20000), "Expressed as '1 in <x>' chances of spawning a meteor. For example, by default it has a chance of 1 in 20000");
         configs.addKeyValuePair(new Pair<>("modify_spawn_chance_at_night", false),"Should the spawn rate be different during the night?");
+
+        configs.addKeyValuePair(new Pair<>("spawn_huge_meteors", true),"Should huge meteors be able to spawn? They are meteors bigger than the maximum size of the big ones");
+        configs.addKeyValuePair(new Pair<>("huge_meteor_chance", 100),"The chance for a spawned meteor to be of huge size. Expressed as in 1 in x chances. (on top of the 'normal' spawning chance)");
+        configs.addKeyValuePair(new Pair<>("huge_meteor_size_limit", 35),"The size limit of how big a huge meteor can be");
+
+        configs.addKeyValuePair(new Pair<>("modify_spawn_chance_at_night", false),"Should the spawn rate be different during the night?");
         configs.addKeyValuePair(new Pair<>("meteor_night_spawn_chance", 10000),"The chance for a meteor to spawn at night if enabled. Expressed as in 1 in x chances.");
 
         configs.addKeyValuePair(new Pair<>("natural_meteor_min_size", 1),"The smallest size a natural meteor can have when spawned in. Cannot go below 1");
@@ -197,6 +206,10 @@ public class Config {
         METEOR_SPAWN_CHANCE = CONFIG.getOrDefault("meteor_spawn_chance", 20000);
         MODIFY_SPAWN_CHANCE_AT_NIGHT = CONFIG.getOrDefault("modify_spawn_chance_at_night", false);
         METEOR_NIGHT_SPAWN_CHANCE = CONFIG.getOrDefault("meteor_night_spawn_chance", 10000);
+        SPAWN_HUGE_METEORS = CONFIG.getOrDefault("spawn_huge_meteors", true);
+        HUGE_METEOR_CHANCE = CONFIG.getOrDefault("huge_meteor_chance",  100);
+        HUGE_METEOR_SIZE_LIMIT = CONFIG.getOrDefault("huge_meteor_size_limit", 35);
+
         NATURAL_METEOR_MIN_SIZE = CONFIG.getOrDefault("natural_meteor_min_size", 1);
         NATURAL_METEOR_MAX_SIZE = CONFIG.getOrDefault("natural_meteor_max_size", 10);
 

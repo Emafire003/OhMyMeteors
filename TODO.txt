@@ -1,1 +1,1 @@
-A cool thing would add custom trail particles, but i would leave this for a subsequent update
+Maybe add a tool to allow meteor tracking?

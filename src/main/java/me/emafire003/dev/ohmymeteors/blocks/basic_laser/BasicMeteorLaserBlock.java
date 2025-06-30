@@ -252,7 +252,11 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
 
                 if(Config.ANNOUNCE_METEOR_DESTROYED){
-                    serverWorld.getPlayers().forEach(player -> player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable("message.ohmymeteors.meteor_destroyed").formatted(Formatting.GREEN)), Config.ACTIONBAR_ANNOUNCEMENTS));
+                    if(meteorProjectileEntity.isHuge()){
+                        serverWorld.getPlayers().forEach(player -> player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable("message.ohmymeteors.meteor_destroyed.huge").formatted(Formatting.GREEN)), Config.ACTIONBAR_ANNOUNCEMENTS));
+                    }else{
+                        serverWorld.getPlayers().forEach(player -> player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable("message.ohmymeteors.meteor_destroyed").formatted(Formatting.GREEN)), Config.ACTIONBAR_ANNOUNCEMENTS));
+                    }
                 }
             });
 

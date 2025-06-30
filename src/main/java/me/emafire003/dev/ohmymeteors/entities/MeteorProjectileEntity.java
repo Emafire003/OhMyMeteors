@@ -24,7 +24,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
@@ -218,7 +217,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     //pal vortex minecraft:flame ~ ~ ~ 1 0.01 0.8 0.1 5 3 10 false 3
     /**
      * Spawns the particle effects behind the meteor*/
-    //TODO this has simply decided to stop working on its own. AUBDfusvGF hSVIDgyscDyagsd cia
+    //TODO make this scale with size properly (somehow)
     public void particleAnimation(double d, double e, double f){
         this.getWorld().addParticle(ParticleTypes.FLASH, d, e + 0.5, f, 0.0, 0.0, 0.0);
         this.getWorld().addParticle(ParticleTypes.EXPLOSION, d, e + 0.5, f, 0.0, 0.0, 0.0);
@@ -310,7 +309,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
                 placer.loadStructure();
                 return;
             }
-            //TODO make a range including big meteors and stuff. Also add more medium meteors
+
             if(this.getSize() <= Config.MAX_MEDIUM_METEOR_SIZE){
                 m_pos_offset = new BlockPos(-2, -3, -3);
 
@@ -332,7 +331,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
                 placer.loadStructure();
             }
-            //TODO add the other sizes
+
             if(this.getSize() <= Config.MAX_BIG_METEOR_SIZE){
                 m_pos_offset = new BlockPos(-4, -6, -3);
 
@@ -356,17 +355,17 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
             }
 
             //If it's not in the sizes above, then it's a huge one:
-            //TODO properly add the huge ones
-            m_pos_offset = new BlockPos(-4, -8, -3);
+            //TODO maybe later make a better calculation of like the direction the metor is travelling in to make it better embed into the terrain
+            m_pos_offset = new BlockPos(-4, -10, -3);
 
             int r = this.getRandom().nextBetween(1,3);
 
             if(r == 1){
                 placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("huge/huge_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
             }else if(r==2){
-                placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("huge/huge_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+                placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("huge/huge_meteor_1"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
             }else{
-                placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("huge/huge_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
+                placer = new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("huge/huge_meteor_2"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
             }
 
             placer.loadStructure();
@@ -448,11 +447,11 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         }
     }
 
-    @Override
-    protected void onEntityHit(EntityHitResult entityHitResult) {
-        super.onEntityHit(entityHitResult);
+    /**Returns true if this meteor is classified as huge, as in bigger than the biggest "big" size*/
+    public boolean isHuge(){
+        return this.getSize() > Config.MAX_BIG_METEOR_SIZE;
     }
-    
+
     /**
      * Gets a meteor object to be spawned in, with a velocity oriented dowards and a spawn position already set up
      * */
