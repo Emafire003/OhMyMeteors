@@ -403,7 +403,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         for(int i = 0; i<scatter_into; i++){
             //Gets a random number between 1 and the remaining size, making sure to leave at least one size for each new meteor yet to generate)
             int size =  this.getRandom().nextBetween(1, Math.max(remainingSize-(scatter_into-i), 1));
-            MeteorProjectileEntity m = getDownwardsMeteor(this.getPos(), (ServerWorld) this.getWorld(), 1, 10+this.getSize() /2, this.getPos().getY(), size, size, false);
+            MeteorProjectileEntity m = getDownwardsMeteor(this.getPos(), (ServerWorld) this.getWorld(), 1, 10+this.getSize() /2, this.getPos().getY(), size, size);
             m.setScatterMeteor(true);
             newMeteors.add(m);
         }
@@ -455,7 +455,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     /**
      * Gets a meteor object to be spawned in, with a velocity oriented dowards and a spawn position already set up
      * */
-    public static MeteorProjectileEntity getDownwardsMeteor(Vec3d originPos, ServerWorld world, int min_spawn_d, int max_spawn_d, double spawn_height, int min_size, int max_size, boolean homing){
+    public static MeteorProjectileEntity getDownwardsMeteor(Vec3d originPos, ServerWorld world, int min_spawn_d, int max_spawn_d, double spawn_height, int min_size, int max_size){
         MeteorProjectileEntity meteor = new MeteorProjectileEntity(world);
 
         //The invert is to also have a chance at having negative coordinates, otherwise they would always be positive
@@ -486,18 +486,8 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
 
         meteor.setSize(world.getRandom().nextBetween(Math.max(0, min_size), Math.min(50, max_size)));
 
-        //TODO world is VERY WIP and only works if the player is rather far down from where the meteor spawns in. Like i might delete world instead
-        if(homing){
-            Vec3d vec3d = meteor.getRotationVec(1.0F);
-            double f = originPos.getX() - (meteor.getX() + vec3d.x * 4.0);
-            double g = /*originPos.getBodyY(0.5)*/ originPos.getY() - (0.5 + meteor.getBodyY(0.5));
-            double h = originPos.getZ() - (meteor.getZ() + vec3d.z * 4.0);
-            Vec3d vec3d2 = new Vec3d(f, g, h);
-            meteor.setVelocity(vec3d2.multiply(1f, 0.01f, 1f));
-        }else{
-            meteor.setVelocity((world.getRandom().nextFloat()/2)*invert_x, -1.0f+world.getRandom().nextFloat(), (world.getRandom().nextFloat()/2)*invert_y);
+        meteor.setVelocity((world.getRandom().nextFloat()/2)*invert_x, -1.0f+world.getRandom().nextFloat(), (world.getRandom().nextFloat()/2)*invert_y);
 
-        }
         return meteor;
     }
 

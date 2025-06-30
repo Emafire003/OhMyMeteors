@@ -79,24 +79,28 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
                 return;
             }
             MeteorProjectileEntity meteor = MeteorProjectileEntity.getDownwardsMeteor(p.getPos(), this.toServerWorld(),
-                    Config.MIN_METEOR_SPAWN_DISTANCE, Config.MAX_METEOR_SPAWN_DISTANCE, Config.METEOR_SPAWN_HEIGHT, Config.NATURAL_METEOR_MIN_SIZE, Config.NATURAL_METEOR_MAX_SIZE, Config.HOMING_METEORS);
+                    Config.MIN_METEOR_SPAWN_DISTANCE, Config.MAX_METEOR_SPAWN_DISTANCE, Config.METEOR_SPAWN_HEIGHT, Config.NATURAL_METEOR_MIN_SIZE, Config.NATURAL_METEOR_MAX_SIZE);
+
+            String message;
+
             if(Config.SPAWN_HUGE_METEORS){
                 if(this.getRandom().nextBetween(0, Config.HUGE_METEOR_CHANCE) == 0){
                     meteor = MeteorProjectileEntity.getDownwardsMeteor(p.getPos(), this.toServerWorld(),
-                            Config.MIN_METEOR_SPAWN_DISTANCE, Config.MAX_METEOR_SPAWN_DISTANCE, Config.METEOR_SPAWN_HEIGHT, Config.MAX_BIG_METEOR_SIZE, Config.HUGE_METEOR_SIZE_LIMIT, Config.HOMING_METEORS);
+                            Config.MIN_METEOR_SPAWN_DISTANCE, Config.MAX_METEOR_SPAWN_DISTANCE, Config.METEOR_SPAWN_HEIGHT, Config.MAX_BIG_METEOR_SIZE, Config.HUGE_METEOR_SIZE_LIMIT);
 
-                    if(Config.ANNOUNCE_METEOR_SPAWN){
-                        this.getPlayers().forEach(player -> {
-                            player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable("message.ohmymeteors.meteor_spawned.huge").formatted(Formatting.RED)), Config.ACTIONBAR_ANNOUNCEMENTS);
-                        });
-                    }
+                    message = "message.ohmymeteors.meteor_spawned.huge";
+                } else {
+                    //this mess is because it needs a final variable btw
+                    message = "message.ohmymeteors.meteor_spawned";
                 }
-            }else{
-                if(Config.ANNOUNCE_METEOR_SPAWN){
-                    this.getPlayers().forEach(player -> {
-                        player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable("message.ohmymeteors.meteor_spawned").formatted(Formatting.RED)), Config.ACTIONBAR_ANNOUNCEMENTS);
-                    });
-                }
+            } else {
+                message = "message.ohmymeteors.meteor_spawned";
+            }
+
+            if(Config.ANNOUNCE_METEOR_SPAWN){
+                this.getPlayers().forEach(player -> {
+                    player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable(message).formatted(Formatting.RED)), Config.ACTIONBAR_ANNOUNCEMENTS);
+                });
             }
 
 
