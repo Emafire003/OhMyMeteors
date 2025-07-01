@@ -232,7 +232,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                 serverWorld.spawnParticles(OMMParticles.LASER_FLASH_PARTICLE, pos.up().up().getX(), pos.up().up().getY(), pos.up().up().getZ(), 2, 0.01, 0.01, 0.01, 0.1);
 
                 LineEffect lineEffect = LineEffect
-                        .builder(serverWorld, OMMParticles.LASER_PARTICLE, pos.toCenterPos())
+                        .builder(serverWorld, OMMParticles.LASER_PARTICLE, pos.toCenterPos().add(0, 0.5, 0))
                         .targetPos(meteorProjectileEntity.getPos())
                         .forced(true)
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*3))
