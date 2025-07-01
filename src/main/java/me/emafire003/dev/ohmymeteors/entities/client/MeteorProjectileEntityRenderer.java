@@ -49,8 +49,9 @@ public class MeteorProjectileEntityRenderer extends EntityRenderer<MeteorProject
 
         matrices.scale(entity.getSize(), entity.getSize(), entity.getSize());
 
-
+        //TODO make sure the colors are correct
         this.model.render(matrices, vertexconsumer, light, OverlayTexture.DEFAULT_UV, 1f, 1f, 1f, 1f);
+        //this.model.render(matrices, vertexconsumer, light, OverlayTexture.DEFAULT_UV);
 
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
