@@ -144,6 +144,7 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
                         .targetPos(lowerPos)
                         .particles((int) (lowerPos.distanceTo(box.getMaxPos())))
                         .iterations(1)
+                        .forced(true)
                         .build();
                 line.run();
 
@@ -207,6 +208,7 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
                         .builder(serverWorld, OMMParticles.LASER_PARTICLE, pos.up().toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*2))
+                        .forced(true)
                         .build();
 
                 lineEffect.setParticle(OMMParticles.LASER_PARTICLE_SMALL);

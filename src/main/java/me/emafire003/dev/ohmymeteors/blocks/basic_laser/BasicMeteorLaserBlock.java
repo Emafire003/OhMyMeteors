@@ -172,6 +172,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                         .targetPos(lowerPos)
                         .particles((int) (lowerPos.distanceTo(box.getMaxPos())))
                         .iterations(1)
+                        .forced(true)
                         .build();
                 line.run();
 
@@ -236,6 +237,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
                 LineEffect lineEffect = LineEffect
                         .builder(serverWorld, OMMParticles.LASER_PARTICLE, pos.toCenterPos())
                         .targetPos(meteorProjectileEntity.getPos())
+                        .forced(true)
                         .particles((int) (pos.toCenterPos().distanceTo(meteorProjectileEntity.getPos())*3))
                         .build();
                 lineEffect.runFor(1, (effect, t) -> {

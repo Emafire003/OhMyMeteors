@@ -219,8 +219,8 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
      * Spawns the particle effects behind the meteor*/
     //TODO make this scale with size properly (somehow)
     public void particleAnimation(double d, double e, double f){
-        this.getWorld().addParticle(ParticleTypes.FLASH, d, e + 0.5, f, 0.0, 0.0, 0.0);
-        this.getWorld().addParticle(ParticleTypes.EXPLOSION, d, e + 0.5, f, 0.0, 0.0, 0.0);
+        this.getWorld().addParticle(ParticleTypes.FLASH, true, d, e + 0.5, f, 0.0, 0.0, 0.0);
+        this.getWorld().addParticle(ParticleTypes.EXPLOSION, true, d, e + 0.5, f, 0.0, 0.0, 0.0);
 
         if(this.getWorld().isClient()){
             return;
@@ -231,6 +231,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         AnimatedCircleEffect circle = AnimatedCircleEffect
                 .builder((ServerWorld) this.getWorld(), ParticleTypes.FLAME, new Vec3d(d,e,f))
                 .particles(100).radius(this.getSize()).wholeCircle(false).maxAngle(3.14)
+                .forced(true)
                 .enableRotation(true).angularVelocityX(2)
                 .build();
 

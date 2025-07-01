@@ -81,8 +81,7 @@ public class SpawnMeteorCommand implements OMMCommand {
             MeteorProjectileEntity meteorProjectile = new MeteorProjectileEntity(source.getWorld());
             meteorProjectile.setPos(source.getPlayer().getX(), source.getPlayer().getEyeY(), source.getPlayer().getZ());
 
-            //meteorProjectile.setVelocity(source.getPlayer(), source.getPlayer().getPitch(), source.getPlayer().getYaw(), 0f, FloatArgumentType.getFloat(context, "speed"), 0f);
-            //TODO for some reason this gets ignored?
+            meteorProjectile.setVelocity(source.getPlayer(), source.getPlayer().getPitch(), source.getPlayer().getYaw(), 0f, FloatArgumentType.getFloat(context, "speed"), 0f);
             meteorProjectile.setSize(IntegerArgumentType.getInteger(context, "size"));
             source.getWorld().spawnEntity(meteorProjectile);
 
