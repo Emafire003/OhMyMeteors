@@ -21,13 +21,12 @@ public class Config {
     public static int NATURAL_METEOR_MAX_SIZE = 10;
 
     public static int MIN_METEOR_SPAWN_DISTANCE = 2; //As in a radius of blocks around the player in which the meteor won't spawn in (but remember that it can have an angled trajectory)
-    public static int MAX_METEOR_SPAWN_DISTANCE = 30; //TODO probably increase it back to 50?
+    public static int MAX_METEOR_SPAWN_DISTANCE = 30; //TODO probably increase it back to 50? Nah
 
     public static int METEOR_SPAWN_HEIGHT = 300; //At which y level should meteors spawn?
 
     public static boolean SHOULD_BYPASS_LEAVES = true; //Should the meteor bypass leaves instead of exploding midair om them?
 
-    //TODO how should this work? A percentage? A fraction? For now i think i'm gonna go with 1 on the number here.
     public static int METEOR_SPAWN_CHANCE = 20000;
     public static boolean SPAWN_HUGE_METEORS = true;
     public static int HUGE_METEOR_CHANCE = 100;

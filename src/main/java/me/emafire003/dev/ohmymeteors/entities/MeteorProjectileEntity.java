@@ -60,16 +60,6 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         initialize();
     }
 
-    public MeteorProjectileEntity(double x, double y, double z, Vec3d velocity, World world) {
-        super(OMMEntities.METEOR_PROJECTILE_ENTITY, x, y, z, velocity, world);
-        initialize();
-    }
-
-    public MeteorProjectileEntity(LivingEntity owner, Vec3d velocity, World world) {
-        super(OMMEntities.METEOR_PROJECTILE_ENTITY, owner, velocity, world);
-        initialize();
-    }
-
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
@@ -113,7 +103,7 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     public void onTrackedDataSet(TrackedData<?> data) {
         if (SIZE.equals(data)) {
             this.calculateDimensions();
-            this.setYaw(this.getYaw()); //todo maybe remove?
+            this.setYaw(this.getYaw());
             if (this.isTouchingWater() && this.random.nextInt(20) == 0) {
                 this.onSwimmingStart();
             }
@@ -217,7 +207,6 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     //pal vortex minecraft:flame ~ ~ ~ 1 0.01 0.8 0.1 5 3 10 false 3
     /**
      * Spawns the particle effects behind the meteor*/
-    //TODO make this scale with size properly (somehow)
     public void particleAnimation(double d, double e, double f){
         this.getWorld().addParticle(ParticleTypes.FLASH, true, d, e + 0.5, f, 0.0, 0.0, 0.0);
         this.getWorld().addParticle(ParticleTypes.EXPLOSION, true, d, e + 0.5, f, 0.0, 0.0, 0.0);
@@ -296,7 +285,6 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
             StructurePlacerAPI placer =
                     new StructurePlacerAPI((StructureWorldAccess) this.getWorld(), OhMyMeteors.getIdentifier("small/small_meteor_0"), this.getBlockPos(), BlockMirror.NONE, BlockRotation.NONE, false, 1f, m_pos_offset);
             //between 2 and 5 (inclusive) the meteor is considered small
-            //TODO migrate this to config
             if(this.getSize() <= Config.MAX_SMALL_METEOR_SIZE){
                 int r = this.getRandom().nextBetween(1,3);
                 if(r == 1){
@@ -390,8 +378,6 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         if(this.getWorld().isClient() || this.getSize() <= 1){
             return;
         }
-
-        //TODO there may be an issue with this thing like also happening with size 1?
 
         //Can generate a minimum of 1 new meteor up to a number equal half of the size of this meteor
         int scatter_into = this.getRandom().nextBetween(1, Math.max(this.getSize()/2, 1));

@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-
-//TODO maybe also add that when a new chunk is loaded or generated there is a chance to spawn a meteor.
 //(there would be a way to like list all of the loaded chunks but it seems a bit impractical when we can just target a random online player)
 @Mixin(ServerWorld.class)
 public abstract class WorldSpawnMeteorMixin extends World implements StructureWorldAccess {
@@ -51,12 +49,6 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
     public void tickSpawnMeteor(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
-        //TODO remove when finished testing
-        if(OhMyMeteors.debugSpawningOff){
-            return;
-        }
-
-
 
         if(Config.SHOULD_COOLDOWN_BETWEEN_METEORS && meteorCooldown > 0){
             meteorCooldown = meteorCooldown - 1;
@@ -74,8 +66,7 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
             PlayerEntity p = this.getRandomAlivePlayer();
 
             if(p == null){
-                //for some reason it won't detetct that there is player online sometimes
-                //TODO maybe use loaded chunk instead somehow?
+                //for some reason it won't detect that there is player online sometimes
                 return;
             }
             MeteorProjectileEntity meteor = MeteorProjectileEntity.getDownwardsMeteor(p.getPos(), this.toServerWorld(),
@@ -98,9 +89,7 @@ public abstract class WorldSpawnMeteorMixin extends World implements StructureWo
             }
 
             if(Config.ANNOUNCE_METEOR_SPAWN){
-                this.getPlayers().forEach(player -> {
-                    player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable(message).formatted(Formatting.RED)), Config.ACTIONBAR_ANNOUNCEMENTS);
-                });
+                this.getPlayers().forEach(player -> player.sendMessage(Text.literal(OhMyMeteors.PREFIX).append(Text.translatable(message).formatted(Formatting.RED)), Config.ACTIONBAR_ANNOUNCEMENTS));
             }
 
 

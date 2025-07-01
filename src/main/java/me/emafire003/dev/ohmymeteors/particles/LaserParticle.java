@@ -6,7 +6,6 @@ import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
 
-//TODO the only problem is that the texture works as long as its verticl ish, but looks uguly when it isn't anymore
 public class LaserParticle extends SpriteBillboardParticle {
     
     LaserParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
@@ -49,7 +48,7 @@ public class LaserParticle extends SpriteBillboardParticle {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    /*@Environment(EnvType.CLIENT)
     public static class DolphinFactory implements ParticleFactory<SimpleParticleType> {
         private final SpriteProvider spriteProvider;
 
@@ -65,7 +64,7 @@ public class LaserParticle extends SpriteBillboardParticle {
             suspendParticle.setMaxAge(suspendParticle.getMaxAge() / 2);
             return suspendParticle;
         }
-    }
+    }*/
 
     @Environment(EnvType.CLIENT)
     public static class EggCrackFactory implements ParticleFactory<SimpleParticleType> {
@@ -83,7 +82,7 @@ public class LaserParticle extends SpriteBillboardParticle {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    /*@Environment(EnvType.CLIENT)
     public static class Factory implements ParticleFactory<SimpleParticleType> {
         private final SpriteProvider spriteProvider;
 
@@ -129,5 +128,5 @@ public class LaserParticle extends SpriteBillboardParticle {
             suspendParticle.setSprite(this.spriteProvider);
             return suspendParticle;
         }
-    }
+    }*/
 }

@@ -67,7 +67,6 @@ public class MeteorProjectileEntityRenderer extends EntityRenderer<MeteorProject
 
     @Override
     public Identifier getTexture(MeteorProjectileEntity entity) {
-        //TODO update
         return OhMyMeteors.getIdentifier("textures/block/meteoric_rock.png");
     }
 }

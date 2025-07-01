@@ -33,8 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
 //Ah remeber that the whole chunk is loaded when a meteor enters it so this will be loaded as well no need for fancy stuff
 public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
 
-    //TODO add a cooldown without using properties or stuff, just like which ticks in the getTicker. Maybe. needs testing
-    //protected int cooldown;
 
 /*    ///Is able to detect and destroy meteors this many blocks up from its position
     protected static final int Y_LEVEL_AREA_COVERAGE = 64;
@@ -102,7 +100,6 @@ public class AdvancedMeteorLaserBlock extends BasicMeteorLaserBlock {
         world.setBlockState(pos, state.with(IN_COOLDOWN, false));
     }
 
-    //TODO add variants cooldown counter etc
     /** This is the main logic of the block. Will check every tick the space around the y level where meteors spawn
      * to see if a meteor has spawned. If it has, it shoots it down.
      */

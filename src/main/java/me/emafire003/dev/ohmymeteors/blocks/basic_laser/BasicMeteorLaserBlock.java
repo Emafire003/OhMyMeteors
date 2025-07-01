@@ -102,9 +102,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        //TODO add a texture change maybe
         //Note: sneaking won't work since it disables this interaction
-        //TODO which item to use?
         if(stack.isOf(OMMItems.FOCUSING_LENSES)){
             BlockState blockState = state.cycle(SHOW_AREA);
             if(blockState.get(SHOW_AREA)){
@@ -132,7 +130,6 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
         world.setBlockState(pos, state.with(IN_COOLDOWN, false));
     }
 
-    //TODO add variants cooldown counter etc
     /** This is the main logic of the block. Will check every tick the space around the y level where meteors spawn
      * to see if a meteor has spawned. If it has, it shoots it down.
      */
