@@ -2,9 +2,9 @@ package me.emafire003.dev.ohmymeteors.sounds;
 
 import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class OMMSounds {
 

@@ -17,14 +17,14 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 public class OMMBlocks {
 
     public static final Block BASIC_METEOR_LASER = registerBlock("basic_meteor_laser",
-            new BasicMeteorLaserBlock(AbstractBlock.Settings.create()
+            new BasicMeteorLaserBlock(AbstractBlock.Settings.of()
                     .strength(1.9f)
                     .luminance(value -> 1) //Makes a little bit of light
                     .sounds(BlockSoundGroup.COPPER)
@@ -35,7 +35,7 @@ public class OMMBlocks {
             register("basic_meteor_laser", BasicMeteorLaserBlockEntity::new, BASIC_METEOR_LASER);
 
     public static final Block ADVANCED_METEOR_LASER = registerBlock("advanced_meteor_laser",
-            new AdvancedMeteorLaserBlock(AbstractBlock.Settings.create()
+            new AdvancedMeteorLaserBlock(AbstractBlock.Settings.of()
                     .strength(2f)
                     .luminance(value -> 2) //Makes a little bit moreof light
                     .sounds(BlockSoundGroup.COPPER)
@@ -47,7 +47,7 @@ public class OMMBlocks {
 
 
     public static final Block METEORIC_ROCK = registerBlock("meteoric_rock",
-            new MeteoricRockBlock(AbstractBlock.Settings.create().requiresTool().strength(4F).solid()),
+            new MeteoricRockBlock(AbstractBlock.Settings.of().requiresTool().strength(4F).solid()),
             //new Block(AbstractBlock.Settings.copy(Blocks.DEEPSLATE_IRON_ORE)),
             ItemGroups.NATURAL, Items.SMOOTH_BASALT);
 

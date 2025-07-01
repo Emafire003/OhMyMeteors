@@ -84,7 +84,7 @@ public class BasicMeteorLaserBlock extends BlockWithEntity implements BlockEntit
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return !world.isClient && world.getDimension().hasSkyLight() ? validateTicker(type, OMMBlocks.BASIC_METEOR_LASER_BLOCK_ENTITY, BasicMeteorLaserBlock::tick) : null;
+        return !world.isClient && world.getDimension().hasSkyLight() ? checkType(type, OMMBlocks.BASIC_METEOR_LASER_BLOCK_ENTITY, BasicMeteorLaserBlock::tick) : null;
     }
 
         /**
