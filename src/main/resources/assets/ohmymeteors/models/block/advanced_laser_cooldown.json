@@ -1,0 +1,8 @@
+{
+	"parent": "ohmymeteors:block/advanced_meteor_laser",
+	"textures": {
+		"2": "ohmymeteors:block/advanced_laser_cooldown",
+		"particle": "ohmymeteors:block/advanced_laser_cooldown"
+	}
+
+}

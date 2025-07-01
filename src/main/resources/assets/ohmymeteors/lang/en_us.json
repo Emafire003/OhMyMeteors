@@ -1,0 +1,20 @@
+{
+  "entity.ohmymeteors.meteor_projectile": "Meteor",
+
+  "block.ohmymeteors.basic_meteor_laser": "Basic Meteor Laser",
+  "block.ohmymeteors.advanced_meteor_laser": "Advanced Meteor Laser",
+  "block.ohmymeteors.meteoric_rock": "Meteoric Rock",
+
+  "item.ohmymeteors.meteoric_chunk": "Meteoric Chunk",
+  "item.ohmymeteors.focusing_lenses": "Focusing Lenses",
+  "item.ohmymeteors.meteoric_alloy": "Meteoric Alloy",
+
+  "message.ohmymeteors.meteor_spawned": "A new meteor has spawned!",
+  "message.ohmymeteors.meteor_destroyed": "A meteor has been destroyed!",
+  "message.ohmymeteors.meteor_spawned.huge": "WATCH OUT! A new HUGE meteor has spawned!",
+  "message.ohmymeteors.meteor_destroyed.huge": "A HUGE meteor has been destroyed!",
+
+  "audio.ohmymeteors.laser_fire": "Meteor Laser fired!",
+  "audio.ohmymeteors.laser_area_on": "Showing laser target area!",
+  "audio.ohmymeteors.laser_area_off": "Stop showing laser target area!"
+}

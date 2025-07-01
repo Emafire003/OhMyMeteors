@@ -2,15 +2,15 @@
 	"schemaVersion": 1,
 	"id": "ohmymeteors",
 	"version": "${version}",
-	"name": "Oh My Meteors",
-	"description": "If this descritpion is still here please send me a DM on discord!",
+	"name": "Oh My, Meteors!",
+	"description": "A mod that introduces meteors that fall from the sky! Extremely configurable, a lot of meteor sizes with different types of impact and generated structures. And also a new kitty! Commissioned by SlayerTheChikken",
 	"authors": [
-		"Emafire003"
+		"Emafire003, SlayerTheChikken"
 	],
 	"contact": {
 		"homepage": "https://modrinth.com/ohmymeteors",
-		"sources": "https://github.com/Emafire003/OhMyMetoeors",
-		"issues": "https://github.com/Emafire003/OhMyMetoeors/issues"
+		"sources": "hhttps://github.com/TeamChikken/OhMyMeteors",
+		"issues": "https://github.com/TeamChikken/OhMyMeteors/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/ohmymeteors/icon.png",

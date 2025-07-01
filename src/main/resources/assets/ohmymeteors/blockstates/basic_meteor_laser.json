@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "in_cooldown=false,firing=false": {
+      "model": "ohmymeteors:block/basic_meteor_laser"
+    },
+    "in_cooldown=true,firing=true": {
+      "model": "ohmymeteors:block/basic_laser_firing"
+    },
+    "in_cooldown=false,firing=true": {
+      "model": "ohmymeteors:block/basic_laser_firing"
+    },
+    "in_cooldown=true,firing=false": {
+      "model": "ohmymeteors:block/basic_laser_cooldown"
+    }
+  }
+}

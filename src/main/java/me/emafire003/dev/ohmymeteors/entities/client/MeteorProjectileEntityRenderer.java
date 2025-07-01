@@ -1,5 +1,6 @@
 package me.emafire003.dev.ohmymeteors.entities.client;
 
+import me.emafire003.dev.ohmymeteors.OhMyMeteors;
 import me.emafire003.dev.ohmymeteors.entities.MeteorProjectileEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
@@ -42,7 +43,7 @@ public class MeteorProjectileEntityRenderer extends EntityRenderer<MeteorProject
 
         matrices.push();
         VertexConsumer vertexconsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
-                this.model.getLayer(new Identifier("minecraft", "textures/block/smooth_basalt.png")), false, false);
+                this.model.getLayer(OhMyMeteors.getIdentifier("textures/block/meteoric_rock.png")), false, false);
 
         matrices.translate(0, -entity.getDimensions(entity.getPose()).height/1.5, 0);
 
@@ -67,7 +68,6 @@ public class MeteorProjectileEntityRenderer extends EntityRenderer<MeteorProject
 
     @Override
     public Identifier getTexture(MeteorProjectileEntity entity) {
-        //TODO update
-        return new Identifier("minecraft", "textures/block/smooth_basalt.png");
+        return OhMyMeteors.getIdentifier("textures/block/meteoric_rock.png");
     }
 }
