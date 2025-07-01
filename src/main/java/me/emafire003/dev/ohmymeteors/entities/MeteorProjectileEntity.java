@@ -61,9 +61,9 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(SIZE, 1);
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.dataTracker.startTracking(SIZE, 1);
     }
 
 
@@ -112,12 +112,17 @@ public class MeteorProjectileEntity extends ExplosiveProjectileEntity {
         super.onTrackedDataSet(data);
     }
 
+    @Override
+    protected float getDrag() {
+        return 1f;
+    }
+
     /**
      * Initializes the meteor with a random size upon creation of the meteor object.
      * Called along with the constructor method
      * */
     public void initialize() {
-        Random random = this.getRandom();
+        Random random = this.getWorld().getRandom();
         int i = random.nextInt(3);
         if (i < 2 && random.nextFloat() < 0.5f) {
             i++;
