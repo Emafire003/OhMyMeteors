@@ -8,8 +8,7 @@ import me.emafire003.dev.ohmymeteors.blocks.basic_laser.BasicMeteorLaserBlockEnt
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.Material;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
@@ -26,6 +25,7 @@ public class OMMBlocks {
                             .strength(1.9f)
                             .luminance(value -> 1) //Makes a little bit of light
                             .sounds(BlockSoundGroup.COPPER)
+                            .solidBlock((state, view, pos) -> true)
                             .requiresTool()), ItemGroup.REDSTONE);
     //Material.METAL
 
@@ -37,6 +37,7 @@ public class OMMBlocks {
                     .strength(2f)
                     .luminance(value -> 2) //Makes a little bit moreof light
                     .sounds(BlockSoundGroup.COPPER)
+                    .solidBlock((state, view, pos) -> true)
                     .requiresTool()
             ), ItemGroup.REDSTONE);
 
